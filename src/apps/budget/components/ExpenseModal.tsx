@@ -12,20 +12,47 @@ function newId(): string {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
+const GERMAN_MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+/** Returns the number of days in a given month (1–12), using a non-leap year so Feb caps at 28 */
+function getDaysInMonth(month: string): number {
+  return new Date(2001, parseInt(month, 10), 0).getDate();
+}
+
+/** Parse a stored ISO date (YYYY-MM-DD) and return { day, month } as zero-padded strings */
+function parseDayMonth(iso?: string): { day: string; month: string } {
+  const now = new Date();
+  if (!iso) {
+    return {
+      day: String(now.getDate()).padStart(2, '0'),
+      month: String(now.getMonth() + 1).padStart(2, '0'),
+    };
+  }
+  const parts = iso.split('-');
+  return { day: parts[2] ?? '01', month: parts[1] ?? '01' };
+}
+
 export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onClose }) => {
   const [name, setName] = useState(expense?.name ?? '');
   const [amountStr, setAmountStr] = useState(
     expense ? String(expense.amount).replace('.', ',') : '',
   );
   const [frequency, setFrequency] = useState<ExpenseFrequency>(expense?.frequency ?? 'monthly');
-  const defaultDate = (() => {
-    const now = new Date();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    return `${now.getFullYear()}-${mm}-01`;
-  })();
-  const [date, setDate] = useState(expense?.date ?? defaultDate);
+  const parsed = parseDayMonth(expense?.date);
+  const [day, setDay] = useState(parsed.day);
+  const [month, setMonth] = useState(parsed.month);
   const [notes, setNotes] = useState(expense?.notes ?? '');
   const [error, setError] = useState('');
+
+  const maxDays = getDaysInMonth(month);
+
+  const handleMonthChange = (newMonth: string) => {
+    const newMax = getDaysInMonth(newMonth);
+    if (parseInt(day, 10) > newMax) {
+      setDay(String(newMax).padStart(2, '0'));
+    }
+    setMonth(newMonth);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +71,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
       name: trimmed,
       amount,
       frequency,
-      date: date || undefined,
+      date: `2000-${month}-${day}`,
       notes: notes.trim() || undefined,
     });
   };
@@ -121,12 +148,30 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
                 Datum
               </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex gap-1.5">
+                <select
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Tag"
+                >
+                  {Array.from({ length: maxDays }, (_, i) => {
+                    const d = String(i + 1).padStart(2, '0');
+                    return <option key={d} value={d}>{i + 1}</option>;
+                  })}
+                </select>
+                <select
+                  value={month}
+                  onChange={(e) => handleMonthChange(e.target.value)}
+                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Monat"
+                >
+                  {GERMAN_MONTHS.map((mName, i) => {
+                    const m = String(i + 1).padStart(2, '0');
+                    return <option key={m} value={m}>{mName}</option>;
+                  })}
+                </select>
+              </div>
             </div>
           </div>
 
