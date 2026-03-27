@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import type { Expense } from '../types';
+import type { Expense, ExpenseFrequency } from '../types';
 import { FREQUENCY_LABELS, FREQUENCY_DIVISOR } from '../types';
 
 interface ExpenseListProps {
   expenses: Expense[];
+  netIncome: number;
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
 }
@@ -20,13 +21,16 @@ function monthlyAmount(expense: Expense): number {
   return expense.amount / FREQUENCY_DIVISOR[expense.frequency];
 }
 
-function fmtDate(iso?: string): string {
+function fmtDate(iso?: string, frequency?: ExpenseFrequency): string {
   if (!iso) return '';
   const parts = iso.split('-');
+  if (frequency === 'monthly') {
+    return `${parseInt(parts[2] ?? '01', 10)}.`;
+  }
   return `${parts[2]}.${parts[1]}.`;
 }
 
-export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
+export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, netIncome, onEdit, onDelete }) => {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (expenses.length === 0) {
@@ -60,6 +64,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
           {sorted.map((expense) => {
             const pct = totalMonthly > 0 ? (monthlyAmount(expense) / totalMonthly) * 100 : 0;
+            const incomePct = netIncome > 0 ? (monthlyAmount(expense) / netIncome) * 100 : 0;
             return (
             <div
               key={expense.id}
@@ -72,7 +77,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
                 <p className="text-gray-500 dark:text-slate-400 text-xs">
                   {FREQUENCY_LABELS[expense.frequency]}
                   {expense.date && (
-                    <span className="ml-1">· {fmtDate(expense.date)}</span>
+                    <span className="ml-1">· {fmtDate(expense.date, expense.frequency)}</span>
                   )}
                   {expense.notes && (
                     <span className="ml-1 italic">· {expense.notes}</span>
@@ -86,7 +91,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
                   {fmt(expense.amount)} €
                 </p>
                 <p className="text-gray-500 dark:text-slate-400 text-xs tabular-nums">
-                  {fmtPct(pct)} %
+                  {fmtPct(pct)} % / {fmtPct(incomePct)} %
                 </p>
               </div>
 
