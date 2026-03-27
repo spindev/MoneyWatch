@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PortfolioApp } from './apps/portfolio/PortfolioApp';
 import { PensionApp } from './apps/pension/PensionApp';
+import { BudgetApp } from './apps/budget/BudgetApp';
 import type { AppId } from './components/AppSwitcher';
 
 const ACTIVE_APP_KEY = 'moneywatch_active_app';
@@ -8,7 +9,7 @@ const ACTIVE_APP_KEY = 'moneywatch_active_app';
 function loadActiveApp(): AppId {
   try {
     const raw = localStorage.getItem(ACTIVE_APP_KEY);
-    if (raw === 'portfolio' || raw === 'pension') return raw;
+    if (raw === 'portfolio' || raw === 'pension' || raw === 'budget') return raw;
   } catch {
     // ignore
   }
@@ -43,8 +44,10 @@ function App() {
     <>
       {activeApp === 'portfolio' ? (
         <PortfolioApp activeApp={activeApp} onSwitchApp={handleSwitchApp} />
-      ) : (
+      ) : activeApp === 'pension' ? (
         <PensionApp activeApp={activeApp} onSwitchApp={handleSwitchApp} />
+      ) : (
+        <BudgetApp activeApp={activeApp} onSwitchApp={handleSwitchApp} />
       )}
     </>
   );
