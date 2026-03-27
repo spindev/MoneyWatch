@@ -16,19 +16,10 @@ function monthlyAmount(expense: Expense): number {
   return expense.amount / FREQUENCY_DIVISOR[expense.frequency];
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Wohnen: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  Lebensmittel: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Transport: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-  Versicherungen: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  Unterhaltung: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',
-  Gesundheit: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  Bildung: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
-  Sonstiges: 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-300',
-};
-
-function categoryColor(category: string): string {
-  return CATEGORY_COLORS[category] ?? CATEGORY_COLORS['Sonstiges'];
+function fmtDate(iso?: string): string {
+  if (!iso) return '';
+  const [year, month, day] = iso.split('-');
+  return `${day}.${month}.${year}`;
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
@@ -38,7 +29,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700">
         <h2 className="text-gray-900 dark:text-white font-semibold text-base">
           Ausgaben ({expenses.length})
         </h2>
@@ -46,36 +37,29 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
 
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
         {expenses.map((expense) => (
-          <div key={expense.id} className="flex items-center gap-3 px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group">
-            {/* Category badge */}
-            <div className="flex-shrink-0">
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${categoryColor(expense.category)}`}>
-                {expense.category || 'Sonstiges'}
-              </span>
-            </div>
-
-            {/* Name + frequency */}
+          <div key={expense.id} className="flex items-center gap-3 px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group">
+            {/* Name + meta */}
             <div className="flex-1 min-w-0">
               <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
-              <p className="text-gray-500 dark:text-slate-400 text-xs">
+              <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
                 {FREQUENCY_LABELS[expense.frequency]}
-                {' · '}
-                {fmt(expense.amount)} € / {
-                  expense.frequency === 'monthly' ? 'Monat' :
-                  expense.frequency === 'quarterly' ? 'Quartal' : 'Jahr'
-                }
+                {expense.date && (
+                  <span className="ml-1">· {fmtDate(expense.date)}</span>
+                )}
                 {expense.notes && (
                   <span className="ml-1 italic">· {expense.notes}</span>
                 )}
               </p>
             </div>
 
-            {/* Monthly equivalent */}
+            {/* Amount */}
             <div className="text-right flex-shrink-0">
               <p className="text-gray-900 dark:text-white text-sm font-semibold tabular-nums">
-                {fmt(monthlyAmount(expense))} €
+                {fmt(expense.amount)} €
               </p>
-              <p className="text-gray-400 dark:text-slate-500 text-xs">/ Monat</p>
+              <p className="text-gray-400 dark:text-slate-500 text-xs">
+                {fmt(monthlyAmount(expense))} € / Monat
+              </p>
             </div>
 
             {/* Actions */}
