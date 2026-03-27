@@ -12,14 +12,18 @@ function fmt(value: number): string {
   return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function fmtPct(value: number): string {
+  return value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
 function monthlyAmount(expense: Expense): number {
   return expense.amount / FREQUENCY_DIVISOR[expense.frequency];
 }
 
 function fmtDate(iso?: string): string {
   if (!iso) return '';
-  const [_year, month, day] = iso.split('-');
-  return `${day}.${month}.`;
+  const parts = iso.split('-');
+  return `${parts[2]}.${parts[1]}.`;
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
@@ -30,6 +34,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
   }
 
   const sorted = [...expenses].sort((a, b) => monthlyAmount(b) - monthlyAmount(a));
+  const totalMonthly = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
 
   const handleDeleteClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -53,48 +58,54 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
       </div>
 
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
-        {sorted.map((expense) => (
-          <div
-            key={expense.id}
-            onClick={() => onEdit(expense)}
-            className="flex items-center gap-3 px-4 sm:px-6 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group cursor-pointer"
-          >
-            {/* Name + meta */}
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
-              <p className="text-gray-500 dark:text-slate-400 text-xs">
-                {FREQUENCY_LABELS[expense.frequency]}
-                {expense.date && (
-                  <span className="ml-1">· {fmtDate(expense.date)}</span>
-                )}
-                {expense.notes && (
-                  <span className="ml-1 italic">· {expense.notes}</span>
-                )}
-              </p>
-            </div>
+          {sorted.map((expense) => {
+            const pct = totalMonthly > 0 ? (monthlyAmount(expense) / totalMonthly) * 100 : 0;
+            return (
+            <div
+              key={expense.id}
+              onClick={() => onEdit(expense)}
+              className="flex items-center gap-3 px-4 sm:px-6 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group cursor-pointer"
+            >
+              {/* Name + meta */}
+              <div className="flex-1 min-w-0">
+                <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
+                <p className="text-gray-500 dark:text-slate-400 text-xs">
+                  {FREQUENCY_LABELS[expense.frequency]}
+                  {expense.date && (
+                    <span className="ml-1">· {fmtDate(expense.date)}</span>
+                  )}
+                  {expense.notes && (
+                    <span className="ml-1 italic">· {expense.notes}</span>
+                  )}
+                </p>
+              </div>
 
-            {/* Amount */}
-            <div className="text-right flex-shrink-0">
-              <p className="text-gray-900 dark:text-white text-sm font-semibold tabular-nums">
-                {fmt(expense.amount)} €
-              </p>
-            </div>
+              {/* Amount + percentage */}
+              <div className="text-right flex-shrink-0">
+                <p className="text-gray-900 dark:text-white text-sm font-semibold tabular-nums">
+                  {fmt(expense.amount)} €
+                </p>
+                <p className="text-gray-500 dark:text-slate-400 text-xs tabular-nums">
+                  {fmtPct(pct)} %
+                </p>
+              </div>
 
-            {/* Delete action */}
-            <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <button
-                onClick={(e) => handleDeleteClick(e, expense.id)}
-                className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                aria-label="Löschen"
-                title="Löschen"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+              {/* Delete action */}
+              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <button
+                  onClick={(e) => handleDeleteClick(e, expense.id)}
+                  className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  aria-label="Löschen"
+                  title="Löschen"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+            );
+          })}
       </div>
     </div>
 

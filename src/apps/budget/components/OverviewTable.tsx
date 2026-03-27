@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Expense, ExpenseFrequency } from '../types';
-import { FREQUENCY_DIVISOR, FREQUENCY_LABELS } from '../types';
+import { FREQUENCY_DIVISOR } from '../types';
 
 interface OverviewTableProps {
   netIncome: number;
@@ -38,8 +38,20 @@ function monthlyAmount(expense: Expense): number {
 
 export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expenses }) => {
   const [period, setPeriod] = useState<Period>('monthly');
-  const [showInfo, setShowInfo] = useState(false);
+  const [showExpenseBreakdown, setShowExpenseBreakdown] = useState(false);
+  const breakdownRef = useRef<HTMLDivElement>(null);
   const multiplier = PERIOD_MULTIPLIER[period];
+
+  useEffect(() => {
+    if (!showExpenseBreakdown) return;
+    function handleClick(e: MouseEvent) {
+      if (breakdownRef.current && !breakdownRef.current.contains(e.target as Node)) {
+        setShowExpenseBreakdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showExpenseBreakdown]);
 
   const totalMonthlyExpenses = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
   const periodIncome = netIncome * multiplier;
@@ -53,22 +65,11 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
     <>
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
       <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div>
-            <h2 className="text-gray-900 dark:text-white font-semibold text-base">Übersicht</h2>
-            <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
-              Alle Ausgaben auf den gewählten Zeitraum normalisiert
-            </p>
-          </div>
-          {/* Info icon */}
-          <button
-            onClick={() => setShowInfo(true)}
-            className="ml-1 w-6 h-6 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex-shrink-0"
-            aria-label="Details anzeigen"
-            title="Details anzeigen"
-          >
-            <span className="text-xs font-bold leading-none">?</span>
-          </button>
+        <div>
+          <h2 className="text-gray-900 dark:text-white font-semibold text-base">Übersicht</h2>
+          <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
+            Alle Ausgaben auf den gewählten Zeitraum normalisiert
+          </p>
         </div>
         {/* Period selector */}
         <div className="flex gap-1 bg-gray-100 dark:bg-slate-700 rounded-lg p-1 self-start sm:self-auto">
@@ -116,7 +117,46 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
               </svg>
             </div>
             <div>
-              <p className="text-gray-900 dark:text-white text-sm font-medium">Gesamtausgaben</p>
+              <div className="flex items-center gap-1">
+                <p className="text-gray-900 dark:text-white text-sm font-medium">Gesamtausgaben</p>
+                {/* Inline info button with compact expense breakdown popup */}
+                <div className="relative" ref={breakdownRef}>
+                  <button
+                    onClick={() => setShowExpenseBreakdown((v) => !v)}
+                    className="w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
+                    aria-label="Details zu Gesamtausgaben"
+                  >
+                    ?
+                  </button>
+                  {showExpenseBreakdown && (
+                    <div className="absolute left-0 top-full mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+                      <p className="font-semibold text-gray-800 dark:text-white">
+                        Ausgaben {PERIOD_LABELS[period]}
+                      </p>
+                      {expenses.length === 0 ? (
+                        <p className="text-gray-500 dark:text-slate-400">Keine Ausgaben vorhanden</p>
+                      ) : (
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                          {[...expenses]
+                            .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
+                            .map((e) => (
+                              <div key={e.id} className="flex justify-between gap-2">
+                                <span className="text-gray-500 dark:text-slate-400 truncate">{e.name}</span>
+                                <span className="font-medium text-gray-800 dark:text-white tabular-nums flex-shrink-0">
+                                  {fmt(monthlyAmount(e) * multiplier)} €
+                                </span>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                      <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
+                        <span>Gesamt</span>
+                        <span className="tabular-nums">{fmt(periodExpenses)} €</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               <p className="text-gray-500 dark:text-slate-400 text-xs">
                 {expenses.length} {expenses.length === 1 ? 'Ausgabe' : 'Ausgaben'}
               </p>
@@ -199,80 +239,6 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
         </div>
       )}
     </div>
-
-    {/* Info modal – normalized values per expense */}
-    {showInfo && (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-        onClick={() => setShowInfo(false)}
-      >
-        <div
-          className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Modal header */}
-          <div className="px-5 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
-            <div>
-              <h3 className="text-gray-900 dark:text-white font-semibold text-base">Ausgaben-Details</h3>
-              <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">Normalisierte Werte pro Ausgabe</p>
-            </div>
-            <button
-              onClick={() => setShowInfo(false)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-              aria-label="Schließen"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-auto flex-1">
-            {expenses.length === 0 ? (
-              <p className="text-gray-500 dark:text-slate-400 text-sm text-center py-8">Keine Ausgaben vorhanden</p>
-            ) : (
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 dark:bg-slate-700/40 sticky top-0">
-                  <tr>
-                    <th className="text-left px-5 py-2.5 text-gray-500 dark:text-slate-400 font-medium text-xs">Ausgabe</th>
-                    <th className="text-right px-3 py-2.5 text-gray-500 dark:text-slate-400 font-medium text-xs">Monatlich</th>
-                    <th className="text-right px-3 py-2.5 text-gray-500 dark:text-slate-400 font-medium text-xs">Quartalsweise</th>
-                    <th className="text-right px-5 py-2.5 text-gray-500 dark:text-slate-400 font-medium text-xs">Jährlich</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                  {[...expenses]
-                    .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
-                    .map((e) => {
-                      const mo = monthlyAmount(e);
-                      return (
-                        <tr key={e.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/30">
-                          <td className="px-5 py-2.5">
-                            <p className="text-gray-900 dark:text-white font-medium truncate max-w-[140px]">{e.name}</p>
-                            <p className="text-gray-400 dark:text-slate-500 text-xs">{FREQUENCY_LABELS[e.frequency]}</p>
-                          </td>
-                          <td className="px-3 py-2.5 text-right text-gray-700 dark:text-slate-300 tabular-nums">{fmt(mo)} €</td>
-                          <td className="px-3 py-2.5 text-right text-gray-700 dark:text-slate-300 tabular-nums">{fmt(mo * 3)} €</td>
-                          <td className="px-5 py-2.5 text-right text-gray-700 dark:text-slate-300 tabular-nums">{fmt(mo * 12)} €</td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-                <tfoot className="border-t-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/40">
-                  <tr>
-                    <td className="px-5 py-2.5 text-gray-900 dark:text-white font-semibold text-xs">Gesamt</td>
-                    <td className="px-3 py-2.5 text-right text-gray-900 dark:text-white font-semibold tabular-nums text-xs">{fmt(totalMonthlyExpenses)} €</td>
-                    <td className="px-3 py-2.5 text-right text-gray-900 dark:text-white font-semibold tabular-nums text-xs">{fmt(totalMonthlyExpenses * 3)} €</td>
-                    <td className="px-5 py-2.5 text-right text-gray-900 dark:text-white font-semibold tabular-nums text-xs">{fmt(totalMonthlyExpenses * 12)} €</td>
-                  </tr>
-                </tfoot>
-              </table>
-            )}
-          </div>
-        </div>
-      </div>
-    )}
     </>
   );
 };
