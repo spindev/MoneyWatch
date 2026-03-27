@@ -17,7 +17,8 @@ export interface Expense {
   name: string;
   amount: number;
   frequency: ExpenseFrequency;
-  category: string;
+  /** ISO date string (YYYY-MM-DD) when the expense starts / is due */
+  date?: string;
   notes?: string;
 }
 

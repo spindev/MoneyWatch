@@ -2,17 +2,6 @@ import React, { useState } from 'react';
 import type { Expense, ExpenseFrequency } from '../types';
 import { FREQUENCY_LABELS } from '../types';
 
-const CATEGORIES = [
-  'Wohnen',
-  'Lebensmittel',
-  'Transport',
-  'Versicherungen',
-  'Unterhaltung',
-  'Gesundheit',
-  'Bildung',
-  'Sonstiges',
-];
-
 interface ExpenseModalProps {
   expense: Expense | null;
   onSave: (expense: Expense) => void;
@@ -29,7 +18,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
     expense ? String(expense.amount).replace('.', ',') : '',
   );
   const [frequency, setFrequency] = useState<ExpenseFrequency>(expense?.frequency ?? 'monthly');
-  const [category, setCategory] = useState(expense?.category ?? 'Sonstiges');
+  const [date, setDate] = useState(expense?.date ?? new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState(expense?.notes ?? '');
   const [error, setError] = useState('');
 
@@ -50,7 +39,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
       name: trimmed,
       amount,
       frequency,
-      category,
+      date: date || undefined,
       notes: notes.trim() || undefined,
     });
   };
@@ -109,16 +98,19 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
-                Betrag (€)
+                Betrag
               </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={amountStr}
-                onChange={(e) => { setAmountStr(e.target.value); setError(''); }}
-                placeholder="0,00"
-                className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                <span className="absolute inset-y-0 left-3 flex items-center text-gray-500 dark:text-slate-400 text-sm pointer-events-none">€</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={amountStr}
+                  onChange={(e) => { setAmountStr(e.target.value); setError(''); }}
+                  placeholder="0,00"
+                  className="w-full pl-7 pr-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div className="flex-1">
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
@@ -138,20 +130,17 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
             </div>
           </div>
 
-          {/* Category */}
+          {/* Date */}
           <div>
             <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
-              Kategorie
+              Datum
             </label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
               className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* Notes */}
