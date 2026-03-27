@@ -76,7 +76,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, netIncome, o
                 <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
                 <p className="text-gray-500 dark:text-slate-400 text-xs">
                   {FREQUENCY_LABELS[expense.frequency]}
-                  {expense.date && (
+                  {expense.date && expense.frequency !== 'monthly' && (
                     <span className="ml-1">· {fmtDate(expense.date, expense.frequency)}</span>
                   )}
                   {expense.notes && (
@@ -91,7 +91,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, netIncome, o
                   {fmt(expense.amount)} €
                 </p>
                 <p className="text-gray-500 dark:text-slate-400 text-xs tabular-nums">
-                  {fmtPct(pct)} % / {fmtPct(incomePct)} %
+                  {fmtPct(incomePct)} % / {fmtPct(pct)} %
                 </p>
               </div>
 

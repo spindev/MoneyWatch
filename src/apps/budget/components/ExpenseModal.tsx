@@ -73,7 +73,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4 overflow-x-hidden" onClick={onClose}>
+    <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -123,7 +123,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
           </div>
 
           {/* Amount + date */}
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-row gap-3">
             <div className="flex-1">
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
                 Betrag

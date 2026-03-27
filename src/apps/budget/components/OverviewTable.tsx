@@ -63,7 +63,7 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
 
   return (
     <>
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
       <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-gray-900 dark:text-white font-semibold text-base">Übersicht</h2>
@@ -109,7 +109,7 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
         </div>
 
         {/* Expenses row */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4">
+        <div className="relative flex items-center justify-between px-4 sm:px-6 py-4" ref={breakdownRef}>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
               <svg className="w-4 h-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,42 +120,13 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
               <div className="flex items-center gap-1">
                 <p className="text-gray-900 dark:text-white text-sm font-medium">Gesamtausgaben</p>
                 {/* Inline info button with compact expense breakdown popup */}
-                <div className="relative" ref={breakdownRef}>
-                  <button
-                    onClick={() => setShowExpenseBreakdown((v) => !v)}
-                    className="w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
-                    aria-label="Details zu Gesamtausgaben"
-                  >
-                    ?
-                  </button>
-                  {showExpenseBreakdown && (
-                    <div className="absolute left-0 top-full mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
-                      <p className="font-semibold text-gray-800 dark:text-white">
-                        Ausgaben {PERIOD_LABELS[period]}
-                      </p>
-                      {expenses.length === 0 ? (
-                        <p className="text-gray-500 dark:text-slate-400">Keine Ausgaben vorhanden</p>
-                      ) : (
-                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                          {[...expenses]
-                            .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
-                            .map((e) => (
-                              <div key={e.id} className="flex justify-between gap-2">
-                                <span className="text-gray-500 dark:text-slate-400 truncate">{e.name}</span>
-                                <span className="font-medium text-gray-800 dark:text-white tabular-nums flex-shrink-0">
-                                  {fmt(monthlyAmount(e) * multiplier)} €
-                                </span>
-                              </div>
-                            ))}
-                        </div>
-                      )}
-                      <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
-                        <span>Gesamt</span>
-                        <span className="tabular-nums">{fmt(periodExpenses)} €</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <button
+                  onClick={() => setShowExpenseBreakdown((v) => !v)}
+                  className="w-4 h-4 rounded-full bg-gray-200 dark:bg-slate-600 text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors flex items-center justify-center flex-shrink-0 text-[10px] font-bold leading-none"
+                  aria-label="Details zu Gesamtausgaben"
+                >
+                  ?
+                </button>
               </div>
               <p className="text-gray-500 dark:text-slate-400 text-xs">
                 {expenses.length} {expenses.length === 1 ? 'Ausgabe' : 'Ausgaben'}
@@ -165,6 +136,33 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
           <span className="text-red-500 dark:text-red-400 font-semibold text-base tabular-nums">
             − {fmt(periodExpenses)} €
           </span>
+          {showExpenseBreakdown && (
+            <div className="absolute left-0 top-full mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+              <p className="font-semibold text-gray-800 dark:text-white">
+                Ausgaben {PERIOD_LABELS[period]}
+              </p>
+              {expenses.length === 0 ? (
+                <p className="text-gray-500 dark:text-slate-400">Keine Ausgaben vorhanden</p>
+              ) : (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {[...expenses]
+                    .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
+                    .map((e) => (
+                      <div key={e.id} className="flex justify-between gap-2">
+                        <span className="text-gray-500 dark:text-slate-400 truncate">{e.name}</span>
+                        <span className="font-medium text-gray-800 dark:text-white tabular-nums flex-shrink-0">
+                          {fmt(monthlyAmount(e) * multiplier)} €
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+              <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
+                <span>Gesamt</span>
+                <span className="tabular-nums">{fmt(periodExpenses)} €</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Remaining row */}
@@ -172,7 +170,7 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
           remaining >= 0
             ? 'bg-emerald-50 dark:bg-emerald-900/10'
             : 'bg-red-50 dark:bg-red-900/10'
-        }`}>
+        }${periodIncome <= 0 ? ' rounded-b-2xl' : ''}`}>
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
               remaining >= 0
@@ -207,7 +205,7 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
 
       {/* Dual-color progress bar */}
       {periodIncome > 0 && (
-        <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-slate-700/30">
+        <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-slate-700/30 rounded-b-2xl">
           <div className="h-5 rounded-full overflow-hidden flex">
             <div
               className="h-full bg-red-500 transition-all duration-300 flex items-center justify-center"
