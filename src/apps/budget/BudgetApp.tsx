@@ -90,6 +90,7 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
         {expenses.length > 0 ? (
           <ExpenseList
             expenses={expenses}
+            netIncome={settings.netIncome}
             onEdit={(e) => {
               setEditExpense(e);
               setShowAddModal(false);
