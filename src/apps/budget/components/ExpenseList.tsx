@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Expense } from '../types';
 import { FREQUENCY_LABELS, FREQUENCY_DIVISOR } from '../types';
 
@@ -23,31 +23,46 @@ function fmtDate(iso?: string): string {
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
   if (expenses.length === 0) {
     return null;
   }
 
-  const totalMonthly = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
   const sorted = [...expenses].sort((a, b) => monthlyAmount(b) - monthlyAmount(a));
 
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setConfirmDeleteId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (confirmDeleteId) {
+      onDelete(confirmDeleteId);
+      setConfirmDeleteId(null);
+    }
+  };
+
   return (
+    <>
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
-      <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-slate-700">
+      <div className="px-4 sm:px-6 py-3 border-b border-gray-100 dark:border-slate-700">
         <h2 className="text-gray-900 dark:text-white font-semibold text-base">
           Ausgaben ({expenses.length})
         </h2>
       </div>
 
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
-        {sorted.map((expense) => {
-          const monthly = monthlyAmount(expense);
-          const pct = totalMonthly > 0 ? (monthly / totalMonthly) * 100 : 0;
-          return (
-          <div key={expense.id} className="flex items-center gap-3 px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group">
+        {sorted.map((expense) => (
+          <div
+            key={expense.id}
+            onClick={() => onEdit(expense)}
+            className="flex items-center gap-3 px-4 sm:px-6 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group cursor-pointer"
+          >
             {/* Name + meta */}
             <div className="flex-1 min-w-0">
               <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
-              <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
+              <p className="text-gray-500 dark:text-slate-400 text-xs">
                 {FREQUENCY_LABELS[expense.frequency]}
                 {expense.date && (
                   <span className="ml-1">· {fmtDate(expense.date)}</span>
@@ -63,28 +78,12 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
               <p className="text-gray-900 dark:text-white text-sm font-semibold tabular-nums">
                 {fmt(expense.amount)} €
               </p>
-              <p className="text-gray-400 dark:text-slate-500 text-xs">
-                {expense.frequency !== 'monthly' && (
-                  <span>{fmt(monthly)} € / Monat · </span>
-                )}
-                {fmt(pct)} %
-              </p>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+            {/* Delete action */}
+            <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
               <button
-                onClick={() => onEdit(expense)}
-                className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                aria-label="Bearbeiten"
-                title="Bearbeiten"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => onDelete(expense.id)}
+                onClick={(e) => handleDeleteClick(e, expense.id)}
                 className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 aria-label="Löschen"
                 title="Löschen"
@@ -95,9 +94,50 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
               </button>
             </div>
           </div>
-          );
-        })}
+        ))}
       </div>
     </div>
+
+    {/* Delete confirmation dialog */}
+    {confirmDeleteId && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        onClick={() => setConfirmDeleteId(null)}
+      >
+        <div
+          className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl w-full max-w-sm p-6"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-gray-900 dark:text-white font-semibold">Ausgabe löschen?</h3>
+              <p className="text-gray-500 dark:text-slate-400 text-sm mt-0.5">
+                {expenses.find((e) => e.id === confirmDeleteId)?.name ?? 'Diese Ausgabe'} wird unwiderruflich gelöscht.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => setConfirmDeleteId(null)}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors"
+            >
+              Löschen
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
