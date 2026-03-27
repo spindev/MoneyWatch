@@ -18,7 +18,12 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
     expense ? String(expense.amount).replace('.', ',') : '',
   );
   const [frequency, setFrequency] = useState<ExpenseFrequency>(expense?.frequency ?? 'monthly');
-  const [date, setDate] = useState(expense?.date ?? new Date().toISOString().slice(0, 10));
+  const defaultDate = (() => {
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    return `${now.getFullYear()}-${mm}-01`;
+  })();
+  const [date, setDate] = useState(expense?.date ?? defaultDate);
   const [notes, setNotes] = useState(expense?.notes ?? '');
   const [error, setError] = useState('');
 
@@ -94,7 +99,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
             />
           </div>
 
-          {/* Amount + frequency */}
+          {/* Amount + date */}
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
@@ -114,33 +119,33 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
             </div>
             <div className="flex-1">
               <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
-                Turnus
+                Datum
               </label>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {(Object.keys(FREQUENCY_LABELS) as ExpenseFrequency[]).map((f) => (
-                  <option key={f} value={f}>
-                    {FREQUENCY_LABELS[f]}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 
-          {/* Date */}
+          {/* Frequency */}
           <div>
             <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
-              Datum
+              Turnus
             </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
               className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              {(Object.keys(FREQUENCY_LABELS) as ExpenseFrequency[]).map((f) => (
+                <option key={f} value={f}>
+                  {FREQUENCY_LABELS[f]}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Notes */}

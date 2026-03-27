@@ -18,14 +18,17 @@ function monthlyAmount(expense: Expense): number {
 
 function fmtDate(iso?: string): string {
   if (!iso) return '';
-  const [year, month, day] = iso.split('-');
-  return `${day}.${month}.${year}`;
+  const [_year, month, day] = iso.split('-');
+  return `${day}.${month}.`;
 }
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
   if (expenses.length === 0) {
     return null;
   }
+
+  const totalMonthly = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
+  const sorted = [...expenses].sort((a, b) => monthlyAmount(b) - monthlyAmount(a));
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden shadow-sm">
@@ -36,7 +39,10 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
       </div>
 
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
-        {expenses.map((expense) => (
+        {sorted.map((expense) => {
+          const monthly = monthlyAmount(expense);
+          const pct = totalMonthly > 0 ? (monthly / totalMonthly) * 100 : 0;
+          return (
           <div key={expense.id} className="flex items-center gap-3 px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition-colors group">
             {/* Name + meta */}
             <div className="flex-1 min-w-0">
@@ -58,7 +64,10 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
                 {fmt(expense.amount)} €
               </p>
               <p className="text-gray-400 dark:text-slate-500 text-xs">
-                {fmt(monthlyAmount(expense))} € / Monat
+                {expense.frequency !== 'monthly' && (
+                  <span>{fmt(monthly)} € / Monat · </span>
+                )}
+                {fmt(pct)} %
               </p>
             </div>
 
@@ -86,7 +95,8 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDe
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
