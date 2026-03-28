@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { Expense, ExpenseFrequency, ExpenseCategory } from '../types';
 import { FREQUENCY_DIVISOR, EXPENSE_CATEGORY_LABELS, EXPENSE_CATEGORY_COLORS } from '../types';
 
+/** Sentinel key used for expenses that have no category assigned */
+const NO_CATEGORY_KEY = '__none__' as const;
+
 interface OverviewTableProps {
   netIncome: number;
   expenses: Expense[];
@@ -147,13 +150,13 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
                 // Group by category
                 const groups = new Map<string, Expense[]>();
                 for (const e of expenses) {
-                  const key = e.category ?? '__none__';
+                  const key = e.category ?? NO_CATEGORY_KEY;
                   if (!groups.has(key)) groups.set(key, []);
                   groups.get(key)!.push(e);
                 }
-                const categoryOrder: Array<ExpenseCategory | '__none__'> = [
+                const categoryOrder: Array<ExpenseCategory | typeof NO_CATEGORY_KEY> = [
                   ...Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[],
-                  '__none__',
+                  NO_CATEGORY_KEY,
                 ];
                 const orderedGroups = categoryOrder.filter((k) => groups.has(k));
                 return (
@@ -161,8 +164,8 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
                     {orderedGroups.map((key) => {
                       const groupExpenses = groups.get(key)!;
                       const groupTotal = groupExpenses.reduce((s, e) => s + monthlyAmount(e) * multiplier, 0);
-                      const label = key === '__none__' ? 'Sonstige' : EXPENSE_CATEGORY_LABELS[key as ExpenseCategory];
-                      const color = key === '__none__' ? '#94a3b8' : EXPENSE_CATEGORY_COLORS[key as ExpenseCategory];
+                      const label = key === NO_CATEGORY_KEY ? 'Sonstige' : EXPENSE_CATEGORY_LABELS[key as ExpenseCategory];
+                      const color = key === NO_CATEGORY_KEY ? '#94a3b8' : EXPENSE_CATEGORY_COLORS[key as ExpenseCategory];
                       return (
                         <div key={key}>
                           <div className="flex items-center justify-between mb-0.5">
