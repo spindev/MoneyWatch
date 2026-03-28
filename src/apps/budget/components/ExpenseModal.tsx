@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Expense, ExpenseFrequency } from '../types';
-import { FREQUENCY_LABELS } from '../types';
+import type { Expense, ExpenseFrequency, ExpenseCategory } from '../types';
+import { FREQUENCY_LABELS, EXPENSE_CATEGORY_LABELS } from '../types';
 
 interface ExpenseModalProps {
   expense: Expense | null;
@@ -34,6 +34,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
     expense ? String(expense.amount).replace('.', ',') : '',
   );
   const [frequency, setFrequency] = useState<ExpenseFrequency>(expense?.frequency ?? 'monthly');
+  const [category, setCategory] = useState<ExpenseCategory | ''>(expense?.category ?? '');
   const parsed = parseDayMonth(expense?.date);
   const [day, setDay] = useState(parsed.day);
   const [month, setMonth] = useState(parsed.month);
@@ -69,6 +70,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
       frequency,
       date: `2000-${month}-${day}`,
       notes: notes.trim() || undefined,
+      category: category || undefined,
     });
   };
 
@@ -188,6 +190,26 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
               {(Object.keys(FREQUENCY_LABELS) as ExpenseFrequency[]).map((f) => (
                 <option key={f} value={f}>
                   {FREQUENCY_LABELS[f]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
+              Kategorie <span className="text-gray-400 dark:text-slate-500 font-normal">(optional)</span>
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as ExpenseCategory | '')}
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ fontSize: '16px' }}
+            >
+              <option value="">— Keine Kategorie —</option>
+              {(Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[]).map((c) => (
+                <option key={c} value={c}>
+                  {EXPENSE_CATEGORY_LABELS[c]}
                 </option>
               ))}
             </select>

@@ -13,6 +13,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
   const [confirmClear, setConfirmClear] = useState(false);
   const [monthlySavingsRaw, setMonthlySavingsRaw] = useState(String(settings.monthlySavings));
   const [forecastYearsRaw, setForecastYearsRaw] = useState(String(settings.forecastYears));
+  const [ratePessRaw, setRatePessRaw] = useState(String(settings.forecastRatePessimistic));
+  const [rateRealRaw, setRateRealRaw] = useState(String(settings.forecastRateRealistic));
+  const [rateOptRaw, setRateOptRaw] = useState(String(settings.forecastRateOptimistic));
 
   const handleTheme = (theme: Theme) => {
     onSave({ ...settings, theme });
@@ -33,6 +36,19 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
       onSave({ ...settings, forecastYears: val });
     } else {
       setForecastYearsRaw(String(settings.forecastYears));
+    }
+  };
+
+  const handleRateBlur = (
+    raw: string,
+    field: 'forecastRatePessimistic' | 'forecastRateRealistic' | 'forecastRateOptimistic',
+    reset: (v: string) => void,
+  ) => {
+    const val = parseFloat(raw.replace(',', '.'));
+    if (!isNaN(val) && val >= 0 && val <= 30) {
+      onSave({ ...settings, [field]: val });
+    } else {
+      reset(String(settings[field]));
     }
   };
 
@@ -141,6 +157,57 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
                 onChange={(e) => setForecastYearsRaw(e.target.value)}
                 onBlur={handleForecastYearsBlur}
                 className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </label>
+          </div>
+          <p className="text-gray-600 dark:text-slate-400 text-xs">Rendite p.a. (%)</p>
+          <div className="grid grid-cols-3 gap-2">
+            <label className="block">
+              <span className="text-gray-500 dark:text-slate-500 text-xs flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-400" />
+                Pessimistisch
+              </span>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.5"
+                value={ratePessRaw}
+                onChange={(e) => setRatePessRaw(e.target.value)}
+                onBlur={() => handleRateBlur(ratePessRaw, 'forecastRatePessimistic', setRatePessRaw)}
+                className="mt-1 w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </label>
+            <label className="block">
+              <span className="text-gray-500 dark:text-slate-500 text-xs flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-blue-400" />
+                Realistisch
+              </span>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.5"
+                value={rateRealRaw}
+                onChange={(e) => setRateRealRaw(e.target.value)}
+                onBlur={() => handleRateBlur(rateRealRaw, 'forecastRateRealistic', setRateRealRaw)}
+                className="mt-1 w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </label>
+            <label className="block">
+              <span className="text-gray-500 dark:text-slate-500 text-xs flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                Optimistisch
+              </span>
+              <input
+                type="number"
+                min="0"
+                max="30"
+                step="0.5"
+                value={rateOptRaw}
+                onChange={(e) => setRateOptRaw(e.target.value)}
+                onBlur={() => handleRateBlur(rateOptRaw, 'forecastRateOptimistic', setRateOptRaw)}
+                className="mt-1 w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </label>
           </div>

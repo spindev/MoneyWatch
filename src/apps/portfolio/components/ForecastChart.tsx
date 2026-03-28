@@ -22,6 +22,9 @@ interface ForecastChartProps {
   monthlySavings: number;
   forecastYears: number;
   totalCost: number;
+  ratePessimistic?: number;
+  rateRealistic?: number;
+  rateOptimistic?: number;
 }
 
 const CustomTooltip = ({
@@ -42,13 +45,13 @@ const CustomTooltip = ({
   return null;
 };
 
-export const ForecastChart: React.FC<ForecastChartProps> = ({ data, monthlySavings, forecastYears, totalCost }) => {
+export const ForecastChart: React.FC<ForecastChartProps> = ({ data, monthlySavings, forecastYears, totalCost, ratePessimistic = 3, rateRealistic = 7, rateOptimistic = 10 }) => {
   const last = data[data.length - 1];
 
   const scenarios = [
-    { key: 'pessimistic', label: 'Pessimistisch', rate: '3%', color: '#f87171', value: last?.pessimistic ?? 0 },
-    { key: 'realistic',   label: 'Realistisch',   rate: '7%', color: '#3b82f6', value: last?.realistic ?? 0 },
-    { key: 'optimistic',  label: 'Optimistisch',  rate: '10%', color: '#10b981', value: last?.optimistic ?? 0 },
+    { key: 'pessimistic', label: 'Pessimistisch', rate: `${ratePessimistic}%`, color: '#f87171', value: last?.pessimistic ?? 0 },
+    { key: 'realistic',   label: 'Realistisch',   rate: `${rateRealistic}%`, color: '#3b82f6', value: last?.realistic ?? 0 },
+    { key: 'optimistic',  label: 'Optimistisch',  rate: `${rateOptimistic}%`, color: '#10b981', value: last?.optimistic ?? 0 },
   ];
   const finalInvested = last?.totalInvested ?? totalCost;
 

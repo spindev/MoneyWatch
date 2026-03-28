@@ -60,6 +60,12 @@ export interface Settings {
   theme: Theme;
   monthlySavings: number;
   forecastYears: number;
+  /** Annual return rate for pessimistic scenario (e.g. 3 for 3%) */
+  forecastRatePessimistic: number;
+  /** Annual return rate for realistic scenario (e.g. 7 for 7%) */
+  forecastRateRealistic: number;
+  /** Annual return rate for optimistic scenario (e.g. 10 for 10%) */
+  forecastRateOptimistic: number;
 }
 
 /** One lot consumed (fully or partially) in a simulated FIFO sale */

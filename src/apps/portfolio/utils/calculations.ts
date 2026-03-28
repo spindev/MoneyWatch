@@ -160,21 +160,21 @@ export function sharesForTargetGain(
 
 /**
  * Build yearly forecast data points from today forward for `years` years.
+ * Annual return rates are provided as percentages (e.g. 3 for 3%).
  */
 export function buildForecast(
   currentValue: number,
   totalCost: number,
   monthlySavings: number,
   years: number,
+  pessimisticRate = 3,
+  realisticRate = 7,
+  optimisticRate = 10,
 ): ForecastPoint[] {
-  const PESSIMISTIC_ANNUAL = 0.03;
-  const REALISTIC_ANNUAL = 0.07;
-  const OPTIMISTIC_ANNUAL = 0.10;
-
-  const monthlyRate = (annual: number) => (1 + annual) ** (1 / 12) - 1;
-  const rPess = monthlyRate(PESSIMISTIC_ANNUAL);
-  const rReal = monthlyRate(REALISTIC_ANNUAL);
-  const rOpt  = monthlyRate(OPTIMISTIC_ANNUAL);
+  const monthlyRate = (annual: number) => (1 + annual / 100) ** (1 / 12) - 1;
+  const rPess = monthlyRate(pessimisticRate);
+  const rReal = monthlyRate(realisticRate);
+  const rOpt  = monthlyRate(optimisticRate);
 
   const startYear = new Date().getFullYear();
   const points: ForecastPoint[] = [];

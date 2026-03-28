@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Expense, ExpenseFrequency } from '../types';
-import { FREQUENCY_LABELS, FREQUENCY_DIVISOR } from '../types';
+import { FREQUENCY_LABELS, FREQUENCY_DIVISOR, EXPENSE_CATEGORY_LABELS, EXPENSE_CATEGORY_COLORS } from '../types';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -74,15 +74,25 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, netIncome, o
               {/* Name + meta */}
               <div className="flex-1 min-w-0">
                 <p className="text-gray-900 dark:text-white text-sm font-medium truncate">{expense.name}</p>
-                <p className="text-gray-500 dark:text-slate-400 text-xs">
-                  {FREQUENCY_LABELS[expense.frequency]}
-                  {expense.date && expense.frequency !== 'monthly' && (
-                    <span className="ml-1">· {fmtDate(expense.date, expense.frequency)}</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {expense.category && (
+                    <span
+                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium text-white"
+                      style={{ backgroundColor: EXPENSE_CATEGORY_COLORS[expense.category] }}
+                    >
+                      {EXPENSE_CATEGORY_LABELS[expense.category]}
+                    </span>
                   )}
-                  {expense.notes && (
-                    <span className="ml-1 italic">· {expense.notes}</span>
-                  )}
-                </p>
+                  <p className="text-gray-500 dark:text-slate-400 text-xs">
+                    {FREQUENCY_LABELS[expense.frequency]}
+                    {expense.date && expense.frequency !== 'monthly' && (
+                      <span className="ml-1">· {fmtDate(expense.date, expense.frequency)}</span>
+                    )}
+                    {expense.notes && (
+                      <span className="ml-1 italic">· {expense.notes}</span>
+                    )}
+                  </p>
+                </div>
               </div>
 
               {/* Amount + percentage */}

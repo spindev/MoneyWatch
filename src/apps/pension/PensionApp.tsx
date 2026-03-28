@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { OverviewChart } from './components/OverviewChart';
 import { PensionTable } from './components/PensionTable';
 import { PensionModal } from './components/PensionModal';
+import { PensionGapCard } from './components/PensionGapCard';
 import { SettingsPage } from './components/SettingsPage';
 import { EmptyState } from './components/EmptyState';
 import { loadSettings, saveSettings } from './services/settingsService';
@@ -111,6 +112,9 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
               breakdown={breakdown}
               taxSettings={settings.tax}
             />
+
+            {/* ─── Pension Gap ────────────────────────────────────── */}
+            <PensionGapCard netPensionMonthly={breakdown.netMonthly} />
 
             {/* ─── Pension Table ───────────────────────────────────── */}
             <div>

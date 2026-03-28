@@ -9,6 +9,7 @@ interface HeaderProps {
   hasError: boolean;
   onCsvUpload?: (file: File) => void;
   onManualBuy?: () => void;
+  onManualSell?: () => void;
   activeApp: AppId;
   onSwitchApp: (app: AppId) => void;
 }
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   hasError,
   onCsvUpload,
   onManualBuy,
+  onManualSell,
   activeApp,
   onSwitchApp,
 }) => {
@@ -104,6 +106,17 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+
+        <button
+          onClick={onManualSell}
+          className="p-2 rounded-lg transition-colors text-gray-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+          aria-label="Verkauf manuell eintragen"
+          title="Verkauf manuell eintragen"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
         </button>
 

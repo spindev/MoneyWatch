@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { Settings, Theme } from '../types';
+import { exportBackup, importBackup } from '../../../services/backupService';
 
 interface SettingsPageProps {
   settings: Settings;
@@ -18,6 +19,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const [incomeStr, setIncomeStr] = useState(
     settings.netIncome > 0 ? String(settings.netIncome).replace('.', ',') : '',
   );
+  const [importStatus, setImportStatus] = useState<{ ok: boolean; message: string } | null>(null);
+  const importFileRef = useRef<HTMLInputElement>(null);
 
   const handleTheme = (theme: Theme) => {
     onSave({ ...settings, theme });
@@ -121,6 +124,70 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               />
             </div>
           </label>
+        </div>
+
+        {/* Backup / Restore */}
+        <div className="space-y-2">
+          <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datensicherung</p>
+          <p className="text-gray-500 dark:text-slate-400 text-xs">
+            Exportiere alle Daten (Ausgaben, Portfolio, Renten) als JSON-Datei oder stelle sie aus einer Sicherung wieder her.
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={exportBackup}
+              className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Exportieren
+            </button>
+            <button
+              onClick={() => importFileRef.current?.click()}
+              className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+              Importieren
+            </button>
+          </div>
+          <input
+            ref={importFileRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            aria-label="Backup-Datei auswählen"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                const text = ev.target?.result as string;
+                const result = importBackup(text);
+                if (result.ok) {
+                  setImportStatus({ ok: true, message: `${result.restoredKeys.length} Datensätze wiederhergestellt. Seite neu laden, um die Änderungen zu sehen.` });
+                } else {
+                  setImportStatus({ ok: false, message: result.error });
+                }
+              };
+              reader.readAsText(file);
+              e.target.value = '';
+            }}
+          />
+          {importStatus && (
+            <div className={`rounded-lg px-3 py-2 text-xs ${importStatus.ok ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
+              {importStatus.message}
+              {importStatus.ok && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="ml-2 underline font-medium"
+                >
+                  Jetzt neu laden
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Clear data */}

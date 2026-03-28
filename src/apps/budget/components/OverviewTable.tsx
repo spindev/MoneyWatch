@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { Expense, ExpenseFrequency } from '../types';
-import { FREQUENCY_DIVISOR } from '../types';
+import type { Expense, ExpenseFrequency, ExpenseCategory } from '../types';
+import { FREQUENCY_DIVISOR, EXPENSE_CATEGORY_LABELS, EXPENSE_CATEGORY_COLORS } from '../types';
 
 interface OverviewTableProps {
   netIncome: number;
@@ -137,26 +137,59 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
             − {fmt(periodExpenses)} €
           </span>
           {showExpenseBreakdown && (
-            <div className="absolute left-0 top-full mt-1 z-50 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
+            <div className="absolute left-0 top-full mt-1 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-xl p-3 space-y-2 text-xs">
               <p className="font-semibold text-gray-800 dark:text-white">
                 Ausgaben {PERIOD_LABELS[period]}
               </p>
               {expenses.length === 0 ? (
                 <p className="text-gray-500 dark:text-slate-400">Keine Ausgaben vorhanden</p>
-              ) : (
-                <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {[...expenses]
-                    .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
-                    .map((e) => (
-                      <div key={e.id} className="flex justify-between gap-2">
-                        <span className="text-gray-500 dark:text-slate-400 truncate">{e.name}</span>
-                        <span className="font-medium text-gray-800 dark:text-white tabular-nums flex-shrink-0">
-                          {fmt(monthlyAmount(e) * multiplier)} €
-                        </span>
-                      </div>
-                    ))}
-                </div>
-              )}
+              ) : (() => {
+                // Group by category
+                const groups = new Map<string, Expense[]>();
+                for (const e of expenses) {
+                  const key = e.category ?? '__none__';
+                  if (!groups.has(key)) groups.set(key, []);
+                  groups.get(key)!.push(e);
+                }
+                const categoryOrder: Array<ExpenseCategory | '__none__'> = [
+                  ...Object.keys(EXPENSE_CATEGORY_LABELS) as ExpenseCategory[],
+                  '__none__',
+                ];
+                const orderedGroups = categoryOrder.filter((k) => groups.has(k));
+                return (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {orderedGroups.map((key) => {
+                      const groupExpenses = groups.get(key)!;
+                      const groupTotal = groupExpenses.reduce((s, e) => s + monthlyAmount(e) * multiplier, 0);
+                      const label = key === '__none__' ? 'Sonstige' : EXPENSE_CATEGORY_LABELS[key as ExpenseCategory];
+                      const color = key === '__none__' ? '#94a3b8' : EXPENSE_CATEGORY_COLORS[key as ExpenseCategory];
+                      return (
+                        <div key={key}>
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="flex items-center gap-1 font-medium text-gray-700 dark:text-slate-200">
+                              <span className="inline-block w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                              {label}
+                            </span>
+                            <span className="font-semibold text-gray-800 dark:text-white tabular-nums">{fmt(groupTotal)} €</span>
+                          </div>
+                          {groupExpenses.length > 1 && (
+                            <div className="pl-3 space-y-0.5">
+                              {[...groupExpenses]
+                                .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
+                                .map((e) => (
+                                  <div key={e.id} className="flex justify-between gap-2">
+                                    <span className="text-gray-400 dark:text-slate-400 truncate">{e.name}</span>
+                                    <span className="tabular-nums text-gray-600 dark:text-slate-300 flex-shrink-0">{fmt(monthlyAmount(e) * multiplier)} €</span>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
               <div className="border-t border-gray-100 dark:border-slate-600 pt-1.5 flex justify-between font-semibold text-gray-800 dark:text-white">
                 <span>Gesamt</span>
                 <span className="tabular-nums">{fmt(periodExpenses)} €</span>

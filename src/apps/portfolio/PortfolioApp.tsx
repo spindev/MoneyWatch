@@ -8,6 +8,7 @@ import { SettingsPage } from './components/SettingsPage';
 import { MarketDataPage } from './components/MarketDataPage';
 import { CsvImportModal } from './components/CsvImportModal';
 import { ManualBuyModal } from './components/ManualBuyModal';
+import { ManualSellModal } from './components/ManualSellModal';
 import { SaleSimulationModal } from './components/SaleSimulationModal';
 import {
   DEMO_ETFS,
@@ -70,6 +71,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
   const importedSalesRef = useRef<Record<string, SaleLot[]>>(getImportedSales());
   const [csvImportLots, setCsvImportLots] = useState<import('./utils/csvParser').CsvLot[] | null>(null);
   const [showManualBuy, setShowManualBuy] = useState(false);
+  const [showManualSell, setShowManualSell] = useState(false);
   const [showMarketData, setShowMarketData] = useState(false);
   const [saleSimulationHolding, setSaleSimulationHolding] = useState<Holding | null>(null);
   const [showPortfolioSimulation, setShowPortfolioSimulation] = useState(false);
@@ -188,6 +190,16 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
     loadInitialData();
   };
 
+  const handleManualSellConfirm = (isin: string, lot: SaleLot) => {
+    const existing = importedSalesRef.current[isin] ?? [];
+    const updated = [...existing, lot].sort((a, b) => a.date.localeCompare(b.date));
+    const newSales = { ...importedSalesRef.current, [isin]: updated };
+    importedSalesRef.current = newSales;
+    saveImportedSales(newSales);
+    setShowManualSell(false);
+    loadInitialData();
+  };
+
   const readFileAsText = (file: File, encoding: string): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -248,7 +260,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
   const todayStr = todayIsoString();
   const isNonTradingDay = !!lastTradingDate && lastTradingDate < todayStr;
 
-  const forecastData = buildForecast(totalValue, totalCost, settings.monthlySavings, settings.forecastYears);
+  const forecastData = buildForecast(totalValue, totalCost, settings.monthlySavings, settings.forecastYears, settings.forecastRatePessimistic, settings.forecastRateRealistic, settings.forecastRateOptimistic);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100">
@@ -259,6 +271,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
         hasError={!!error && !lastUpdated}
         onCsvUpload={handleCsvUpload}
         onManualBuy={() => setShowManualBuy(true)}
+        onManualSell={() => setShowManualSell(true)}
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
       />
@@ -371,6 +384,9 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
                     monthlySavings={settings.monthlySavings}
                     forecastYears={settings.forecastYears}
                     totalCost={totalCost}
+                    ratePessimistic={settings.forecastRatePessimistic}
+                    rateRealistic={settings.forecastRateRealistic}
+                    rateOptimistic={settings.forecastRateOptimistic}
                   />
                 )}
               </div>
@@ -450,6 +466,14 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
           knownEtfs={DEMO_ETFS}
           onConfirm={handleManualBuyConfirm}
           onClose={() => setShowManualBuy(false)}
+        />
+      )}
+
+      {showManualSell && (
+        <ManualSellModal
+          knownEtfs={DEMO_ETFS}
+          onConfirm={handleManualSellConfirm}
+          onClose={() => setShowManualSell(false)}
         />
       )}
 
