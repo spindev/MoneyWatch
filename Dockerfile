@@ -17,14 +17,12 @@ RUN node scripts/fetch-finance-data.mjs
 RUN npx tsc -b && npx vite build --base /
 
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
-FROM caddy:alpine
+FROM node:20-alpine
 
-# Copy built assets into Caddy's default web root
+RUN npm install -g serve@14.2.6
+
 COPY --from=builder /app/dist /srv
 
-# SPA-aware Caddy config (gzip + try_files fallback to index.html)
-COPY Caddyfile /etc/caddy/Caddyfile
+EXPOSE 3000
 
-EXPOSE 80
-
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+CMD ["serve", "-s", "-l", "3000", "/srv"]
