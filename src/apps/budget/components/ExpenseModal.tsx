@@ -117,7 +117,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
               value={name}
               onChange={(e) => { setName(e.target.value); setError(''); }}
               placeholder="z. B. Miete, Netflix, KFZ-Versicherung"
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               style={{ fontSize: '16px' }}
             />
           </div>
@@ -136,7 +136,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
                   value={amountStr}
                   onChange={(e) => { setAmountStr(e.target.value); setError(''); }}
                   placeholder="0,00"
-                  className="w-full pl-7 pr-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-7 pr-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                   style={{ fontSize: '16px' }}
                 />
               </div>
@@ -149,7 +149,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
                 <select
                   value={day}
                   onChange={(e) => setDay(e.target.value)}
-                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                   aria-label="Tag"
                   style={{ fontSize: '16px' }}
                 >
@@ -161,7 +161,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
                 <select
                   value={month}
                   onChange={(e) => handleMonthChange(e.target.value)}
-                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-2 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                   aria-label="Monat"
                   style={{ fontSize: '16px' }}
                 >
@@ -182,7 +182,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
             <select
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
               style={{ fontSize: '16px' }}
             >
               {(Object.keys(FREQUENCY_LABELS) as ExpenseFrequency[]).map((f) => (
@@ -203,7 +203,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optionale Anmerkung"
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               style={{ fontSize: '16px' }}
             />
           </div>
@@ -219,7 +219,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
             </button>
             <button
               type="submit"
-              className="flex-1 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              className="flex-1 py-2 rounded-lg text-sm font-medium bg-amber-500 hover:bg-amber-600 text-white transition-colors"
             >
               {expense ? 'Speichern' : 'Hinzufügen'}
             </button>

@@ -76,7 +76,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               onClick={() => handleTheme('light')}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${
                 settings.theme === 'light'
-                  ? 'bg-blue-600 border-blue-500 text-white'
+                  ? 'bg-amber-500 border-amber-400 text-white'
                   : 'bg-gray-100 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
@@ -89,7 +89,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               onClick={() => handleTheme('dark')}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${
                 settings.theme === 'dark'
-                  ? 'bg-blue-600 border-blue-500 text-white'
+                  ? 'bg-amber-500 border-amber-400 text-white'
                   : 'bg-gray-100 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
@@ -117,7 +117,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 onChange={(e) => setIncomeStr(e.target.value)}
                 onBlur={handleIncomeBlur}
                 placeholder="z. B. 2500,00"
-                className="w-full pl-7 pr-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-7 pr-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           </label>

@@ -88,7 +88,7 @@ export const PensionTable: React.FC<PensionTableProps> = ({
                   <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={() => onEdit(p)}
-                      className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                      className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors"
                       aria-label={`${p.name} bearbeiten`}
                       title="Bearbeiten"
                     >
@@ -134,7 +134,7 @@ export const PensionTable: React.FC<PensionTableProps> = ({
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => onEdit(p)}
-                  className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-400 dark:text-slate-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
                   aria-label={`${p.name} bearbeiten`}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

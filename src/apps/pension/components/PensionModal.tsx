@@ -108,7 +108,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
             <select
               value={type}
               onChange={(e) => setType(e.target.value as PensionType)}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             >
               {PENSION_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -128,7 +128,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="z. B. Deutsche Rentenversicherung"
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             {errors['name'] && (
               <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors['name']}</p>
@@ -147,7 +147,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
               value={monthlyGrossRaw}
               onChange={(e) => setMonthlyGrossRaw(e.target.value)}
               placeholder="z. B. 1500.00"
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             {errors['monthlyGross'] && (
               <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors['monthlyGross']}</p>
@@ -164,7 +164,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="z. B. Rentennummer, Anbieter-Infos …"
               rows={2}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"
             />
           </div>
 
@@ -179,7 +179,7 @@ export const PensionModal: React.FC<PensionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-violet-600 hover:bg-violet-700 text-white transition-colors"
             >
               {isEdit ? 'Speichern' : 'Hinzufügen'}
             </button>

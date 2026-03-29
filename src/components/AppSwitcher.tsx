@@ -36,21 +36,21 @@ export const AppSwitcher: React.FC<AppSwitcherProps> = ({ activeApp, onSelect, o
                 onClick={() => { onSelect(app.id); onClose(); }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left ${
                   isActive
-                    ? 'bg-blue-50 dark:bg-blue-900/30'
+                    ? app.colorActiveBg
                     : 'hover:bg-gray-100 dark:hover:bg-slate-700'
                 }`}
               >
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className={`w-8 h-8 ${app.colorBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
                   {app.icon}
                 </div>
                 <div className="min-w-0">
-                  <p className={`text-sm font-medium leading-tight ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'}`}>
+                  <p className={`text-sm font-medium leading-tight ${isActive ? app.colorActiveText : 'text-gray-900 dark:text-white'}`}>
                     {app.name}
                   </p>
                   <p className="text-gray-500 dark:text-slate-400 text-xs">{app.subtitle}</p>
                 </div>
                 {isActive && (
-                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className={`w-4 h-4 ${app.colorCheck} ml-auto flex-shrink-0`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 )}

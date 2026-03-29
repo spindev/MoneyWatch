@@ -25,7 +25,6 @@ export const AssetModal: React.FC<AssetModalProps> = ({ asset, onSave, onClose }
   const [rateStr, setRateStr] = useState(
     asset?.interestRate != null ? String(asset.interestRate).replace('.', ',') : '',
   );
-  const [date, setDate] = useState(asset?.date ?? todayIso());
   const [notes, setNotes] = useState(asset?.notes ?? '');
   const [error, setError] = useState('');
 
@@ -57,7 +56,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({ asset, onSave, onClose }
       category,
       value,
       interestRate,
-      date: date || undefined,
+      date: todayIso(),
       notes: notes.trim() || undefined,
     });
   };
@@ -168,21 +167,6 @@ export const AssetModal: React.FC<AssetModalProps> = ({ asset, onSave, onClose }
                 <span className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-slate-400 text-sm pointer-events-none">%</span>
               </div>
             </div>
-          </div>
-
-          {/* Date */}
-          <div>
-            <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">
-              Stand-Datum{' '}
-              <span className="text-gray-400 dark:text-slate-500 font-normal">(optional)</span>
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              style={{ fontSize: '16px' }}
-            />
           </div>
 
           {/* Notes */}
