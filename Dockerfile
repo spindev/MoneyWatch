@@ -17,14 +17,14 @@ RUN node scripts/fetch-finance-data.mjs
 RUN npx tsc -b && npx vite build --base /
 
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
-FROM nginx:alpine
+FROM caddy:alpine
 
-# Copy built assets
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built assets into Caddy's default web root
+COPY --from=builder /app/dist /srv
 
-# Replace default nginx config with our SPA-aware config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# SPA-aware Caddy config (gzip + try_files fallback to index.html)
+COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
