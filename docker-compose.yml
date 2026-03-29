@@ -1,16 +1,6 @@
-# Example docker-compose.yml for MoneyWatch
-#
-# Finance market data is fetched from Yahoo Finance at image-build time and
-# baked into the static assets.  Re-build the image to refresh the data.
-#
-# Usage:
-#   docker compose up -d
-#
-# The app will be available at http://localhost:8080
-
 services:
   moneywatch:
-    image: ghcr.io/spindev/moneywatch:latest   # lowercase per OCI image name rules
+    image: ghcr.io/spindev/moneywatch:latest
     ports:
-      - "8080:80"
+      - "8080:3000"
     restart: unless-stopped
