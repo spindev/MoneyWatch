@@ -74,9 +74,6 @@ export const PensionTable: React.FC<PensionTableProps> = ({
                   })}{' '}
                   €
                 </p>
-                <p className="text-gray-500 dark:text-slate-400 text-xs tabular-nums">
-                  / Monat
-                </p>
               </div>
 
               {/* Delete action (revealed on hover) */}
