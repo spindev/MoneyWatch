@@ -106,7 +106,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           <label className="block">
             <span className="text-gray-600 dark:text-slate-400 text-xs font-medium">
               Renteneintritt
@@ -115,7 +115,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               type="month"
               value={settings.retirementDate ? settings.retirementDate.substring(0, 7) : ''}
               onChange={(e) => onSave({ ...settings, retirementDate: e.target.value })}
-              className="mt-1 w-full min-w-0 px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 [color-scheme:light] dark:[color-scheme:dark]"
+              className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 [color-scheme:light] dark:[color-scheme:dark]"
             />
           </label>
           <label className="block">
