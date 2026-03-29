@@ -84,7 +84,7 @@ export const OverviewChart: React.FC<OverviewChartProps> = ({
         <SummaryRow
           label="Brutto gesamt"
           value={breakdown.totalGrossMonthly}
-          color="bg-blue-500"
+          color="bg-violet-500"
           max={breakdown.totalGrossMonthly}
           infoButton={
             <div ref={bruttoDetailsRef}>

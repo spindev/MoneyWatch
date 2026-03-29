@@ -31,7 +31,15 @@ export const OverviewCards: React.FC<OverviewCardsProps> = ({ assets }) => {
     { tagesgeld: 0, immobilien: 0, genossenschaft: 0, sonstiges: 0 },
   );
 
-  const activeCategories = CATEGORIES.filter((cat) => categoryTotals[cat] > 0);
+  const categoryCounts = CATEGORIES.reduce<Record<AssetCategory, number>>(
+    (acc, cat) => {
+      acc[cat] = assets.filter((a) => a.category === cat).length;
+      return acc;
+    },
+    { tagesgeld: 0, immobilien: 0, genossenschaft: 0, sonstiges: 0 },
+  );
+
+  const activeCategories = CATEGORIES.filter((cat) => categoryCounts[cat] > 0);
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
@@ -62,9 +70,9 @@ export const OverviewCards: React.FC<OverviewCardsProps> = ({ assets }) => {
 
       {/* Category rows */}
       <div className="divide-y divide-gray-100 dark:divide-slate-700">
-        {CATEGORIES.map((cat) => {
+        {activeCategories.map((cat) => {
           const catTotal = categoryTotals[cat];
-          const count = assets.filter((a) => a.category === cat).length;
+          const count = categoryCounts[cat];
           const pct = total > 0 ? (catTotal / total) * 100 : 0;
           return (
             <div key={cat} className="flex items-center justify-between px-4 sm:px-6 py-3">

@@ -81,7 +81,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               onClick={() => handleTheme('light')}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${
                 settings.theme === 'light'
-                  ? 'bg-blue-600 border-blue-500 text-white'
+                  ? 'bg-violet-600 border-violet-500 text-white'
                   : 'bg-gray-100 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
@@ -94,7 +94,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               onClick={() => handleTheme('dark')}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border flex items-center justify-center gap-2 ${
                 settings.theme === 'dark'
-                  ? 'bg-blue-600 border-blue-500 text-white'
+                  ? 'bg-violet-600 border-violet-500 text-white'
                   : 'bg-gray-100 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
@@ -116,7 +116,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               type="month"
               value={settings.retirementDate ? settings.retirementDate.substring(0, 7) : ''}
               onChange={(e) => onSave({ ...settings, retirementDate: e.target.value })}
-              className="mt-1 w-full min-w-0 px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [color-scheme:light] dark:[color-scheme:dark]"
+              className="mt-1 w-full min-w-0 px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500 [color-scheme:light] dark:[color-scheme:dark]"
             />
           </label>
         </div>
@@ -138,7 +138,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               value={kvZusatz}
               onChange={(e) => setKvZusatz(e.target.value)}
               onBlur={handleKvZusatzBlur}
-              className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
           </label>
         </div>
