@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { StatCard } from './components/StatCard';
 import { PortfolioChart } from './components/PortfolioChart';
@@ -250,6 +250,21 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
 
   const forecastData = buildForecast(totalValue, totalCost, settings.monthlySavings, settings.forecastYears);
 
+  const periodReturn = useMemo(() => {
+    const days =
+      timeRange === '1M' ? 30 :
+      timeRange === '3M' ? 90 :
+      timeRange === '6M' ? 180 :
+      timeRange === '1Y' ? 365 :
+      portfolioHistory.length;
+    const filtered = portfolioHistory.slice(-days);
+    if (filtered.length < 2) return null;
+    const startValue = filtered[0].totalValue;
+    const endValue = filtered[filtered.length - 1].totalValue;
+    if (startValue === 0) return null;
+    return ((endValue - startValue) / startValue) * 100;
+  }, [portfolioHistory, timeRange]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100">
       <Header
@@ -346,20 +361,27 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
                 </div>
 
                 {chartView === 'entwicklung' && (
-                  <div className="flex gap-1 mb-4 sm:mb-5">
-                    {TIME_RANGES.map((range) => (
-                      <button
-                        key={range}
-                        onClick={() => setTimeRange(range)}
-                        className={`px-2 sm:px-3 py-1 text-xs rounded-md transition-colors ${
-                          timeRange === range
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        {range}
-                      </button>
-                    ))}
+                  <div className="flex items-center justify-between mb-4 sm:mb-5">
+                    <div className="flex gap-1">
+                      {TIME_RANGES.map((range) => (
+                        <button
+                          key={range}
+                          onClick={() => setTimeRange(range)}
+                          className={`px-2 sm:px-3 py-1 text-xs rounded-md transition-colors ${
+                            timeRange === range
+                              ? 'bg-blue-600 text-white'
+                              : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700'
+                          }`}
+                        >
+                          {range}
+                        </button>
+                      ))}
+                    </div>
+                    {periodReturn !== null && (
+                      <span className={`text-sm font-semibold ${periodReturn >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {formatPercent(periodReturn)}
+                      </span>
+                    )}
                   </div>
                 )}
 
