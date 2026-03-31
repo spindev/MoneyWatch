@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/spindev/MoneyWatch/compare/v1.0.0...v1.1.0) (2026-03-31)
+
+
+### Features
+
+* add ARM64 multi-platform Docker image support for Raspberry Pi 5 ([e9da0bf](https://github.com/spindev/MoneyWatch/commit/e9da0bf9c95861843eba6b4ccc61f44bb482be52))
+
 # 1.0.0 (2026-03-29)
 
 
