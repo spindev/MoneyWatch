@@ -46,6 +46,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # semantic-release commits the version bump back to main; fetch main explicitly so the
+          # Docker build picks up the updated package.json (and therefore the correct version).
+          ref: main
 
       - name: Set lowercase image name
         id: image
