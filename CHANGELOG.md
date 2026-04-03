@@ -1,3 +1,19 @@
+# [1.4.0](https://github.com/spindev/MoneyWatch/compare/v1.3.1...v1.4.0) (2026-04-03)
+
+
+### Bug Fixes
+
+* **review:** AppId aus appDefinitions importieren; historische Datei für Staleness-Prüfung verwenden ([b8236c1](https://github.com/spindev/MoneyWatch/commit/b8236c1031175ba89a76dbda8c7d21973afadee5))
+* **ui:** iOS-Zoom bei Eingabefeldern in Portfolio- und Pension-Einstellungen beheben ([6db63e2](https://github.com/spindev/MoneyWatch/commit/6db63e200201b7e5dd87f5103f5aca48284d7b02))
+
+
+### Features
+
+* **backup:** Backup und Restore nur für die aktive App ([6f47041](https://github.com/spindev/MoneyWatch/commit/6f470410fd81ac38d5b9612152bcc9f37fcae16f))
+* **docker:** Kursdaten in konfigurierbarem Intervall vom Server abrufen ([bd7b43f](https://github.com/spindev/MoneyWatch/commit/bd7b43ffec57257a0f6ef79addc99657169155de))
+* **portfolio:** Kursdaten-Schaltfläche vom Einstellungs- in den Fußbereich verschieben ([37300cb](https://github.com/spindev/MoneyWatch/commit/37300cb9f3153fb814d89dcdefdb2c86b9eb9914))
+* **ui:** neues Favicon für MoneyWatch (Euro-Münze mit Aufwärtstrend) ([388d0ba](https://github.com/spindev/MoneyWatch/commit/388d0bad63d8f3877b663d7a401868865e83aabb))
+
 ## [1.3.1](https://github.com/spindev/MoneyWatch/compare/v1.3.0...v1.3.1) (2026-04-03)
 
 
