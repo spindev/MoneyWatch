@@ -15,6 +15,8 @@ interface HeaderProps {
   onSwitchApp: (app: AppId) => void;
   syncStatus?: SyncStatus;
   onSync?: () => void;
+  onRestore?: () => void;
+  onDismissRestore?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,8 +28,10 @@ export const Header: React.FC<HeaderProps> = ({
   onManualBuy,
   activeApp,
   onSwitchApp,
-  syncStatus = 'offline',
+  syncStatus = 'pending',
   onSync,
+  onRestore,
+  onDismissRestore,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -113,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
           </svg>
         </button>
 
-        <SyncStatusIndicator status={syncStatus} onSync={onSync} />
+        <SyncStatusIndicator status={syncStatus} onSync={onSync} onRestore={onRestore} onDismissRestore={onDismissRestore} />
 
         <button
           onClick={() => onNavigate(page === 'settings' ? 'portfolio' : 'settings')}

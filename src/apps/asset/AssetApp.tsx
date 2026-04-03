@@ -24,7 +24,7 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editAsset, setEditAsset] = useState<Asset | null>(null);
 
-  const { syncStatus, triggerSync } = useSyncStatus();
+  const { syncStatus, triggerSync, confirmRestore, dismissRestore } = useSyncStatus();
 
   // Sync after data mutations (skip the initial render)
   const isFirstRenderRef = useRef(true);
@@ -92,6 +92,8 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
         onSwitchApp={onSwitchApp}
         syncStatus={syncStatus}
         onSync={triggerSync}
+        onRestore={confirmRestore}
+        onDismissRestore={dismissRestore}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
