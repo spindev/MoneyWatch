@@ -78,7 +78,7 @@ export async function restoreFromServer(): Promise<BackupResult> {
   try {
     const res = await fetchWithTimeout(`${API_BASE}/data`);
     if (!res.ok) return 'error';
-    const json = await res.json() as { hash: string; data: Record<string, string> };
+    const json = await res.json() as { data: Record<string, string> };
     for (const key of BACKUP_KEYS) {
       const value = json.data[key];
       if (value !== undefined) {
