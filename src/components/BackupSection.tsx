@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { backupToServer, restoreFromServer, type BackupResult } from '../services/backupService';
+import { backupAppToServer, restoreAppFromServer, type AppId, type BackupResult } from '../services/backupService';
 
 interface BackupSectionProps {
+  /** The sub-app whose data should be backed up / restored. */
+  appId: AppId;
   /** Tailwind color token used for the backup button and confirm dialog (e.g. 'blue', 'violet'). */
   color: 'blue' | 'violet' | 'amber' | 'emerald';
 }
@@ -38,7 +40,7 @@ const DownloadIcon: React.FC = () => (
   </svg>
 );
 
-export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
+export const BackupSection: React.FC<BackupSectionProps> = ({ appId, color }) => {
   const [backupState, setBackupState] = useState<BackupResult | 'idle' | 'loading'>('idle');
   const [restoreState, setRestoreState] = useState<BackupResult | 'idle' | 'loading'>('idle');
   const [confirmRestore, setConfirmRestore] = useState(false);
@@ -50,7 +52,7 @@ export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
 
   const handleBackup = async () => {
     setBackupState('loading');
-    const result = await backupToServer();
+    const result = await backupAppToServer(appId);
     setBackupState(result);
     if (result === 'success') {
       setTimeout(() => setBackupState('idle'), 3000);
@@ -60,7 +62,7 @@ export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
   const handleRestoreConfirm = async () => {
     setConfirmRestore(false);
     setRestoreState('loading');
-    const result = await restoreFromServer();
+    const result = await restoreAppFromServer(appId);
     if (result === 'success') {
       window.location.reload();
     } else {
@@ -76,7 +78,7 @@ export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
       {confirmRestore ? (
         <div className={`rounded-lg border p-3 space-y-2 ${cc.panel}`}>
           <p className={`text-xs ${cc.text}`}>
-            Alle lokalen Daten werden mit dem Server-Backup überschrieben. Fortfahren?
+            Die lokalen Daten dieser App werden mit dem Server-Backup überschrieben. Fortfahren?
           </p>
           <div className="flex gap-2">
             <button

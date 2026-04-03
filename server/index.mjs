@@ -27,6 +27,7 @@ const stmtUpsert = db.prepare(
   'INSERT OR REPLACE INTO sync_store (key, value, updated_at) VALUES (?, ?, ?)'
 );
 const stmtDeleteAll = db.prepare('DELETE FROM sync_store');
+const stmtDeleteKey = db.prepare('DELETE FROM sync_store WHERE key = ?');
 // ── Hash helper ───────────────────────────────────────────────────────────────
 function computeHash(data) {
   const sorted = Object.fromEntries(
@@ -71,9 +72,9 @@ app.get('/api/sync/data', (_req, res) => {
   res.json({ hash: computeHash(data), data });
 });
 
-// POST /api/sync/data — client pushes all localStorage data to the server
+// POST /api/sync/data — client pushes localStorage data to the server
 app.post('/api/sync/data', (req, res) => {
-  const { data } = req.body ?? {};
+  const { data, scope } = req.body ?? {};
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return res.status(400).json({ error: 'Invalid payload: data must be an object' });
   }
@@ -83,15 +84,26 @@ app.post('/api/sync/data', (req, res) => {
     ([, v]) => typeof v === 'string'
   );
 
-  const replaceAll = db.transaction(() => {
-    // Replace the entire stored dataset in one atomic operation
-    stmtDeleteAll.run();
+  const upsertData = db.transaction(() => {
+    if (Array.isArray(scope) && scope.length > 0) {
+      // Per-app backup: only touch keys within the given scope.
+      // Delete scoped keys that were not included in the payload (intentional deletions).
+      const dataKeys = new Set(entries.map(([k]) => k));
+      for (const key of scope) {
+        if (!dataKeys.has(key)) {
+          stmtDeleteKey.run(key);
+        }
+      }
+    } else {
+      // Legacy / full backup: replace the entire stored dataset.
+      stmtDeleteAll.run();
+    }
     for (const [key, value] of entries) {
       stmtUpsert.run(key, value, now);
     }
   });
 
-  replaceAll();
+  upsertData();
 
   const rows = stmtAll.all();
   const stored = Object.fromEntries(rows.map((r) => [r.key, r.value]));
