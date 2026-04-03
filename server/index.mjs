@@ -187,10 +187,14 @@ if (FINANCE_TICKERS.length > 0) {
   const HISTORICAL_HOUR = parseInt(process.env.FINANCE_HISTORICAL_HOUR ?? '', 10) || 3;
   const HISTORICAL_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
-  const quotesFile = join(FINANCE_DATA_DIR, 'quotes.json');
+  // Use the first ticker's historical file to determine staleness.
+  const firstHistoricalFile = join(
+    FINANCE_DATA_DIR,
+    `historical-${safeFilename(FINANCE_TICKERS[0])}.json`,
+  );
   const historicalStale =
-    !existsSync(quotesFile) ||
-    Date.now() - statSync(quotesFile).mtimeMs > HISTORICAL_MAX_AGE_MS;
+    !existsSync(firstHistoricalFile) ||
+    Date.now() - statSync(firstHistoricalFile).mtimeMs > HISTORICAL_MAX_AGE_MS;
 
   if (historicalStale) {
     refreshHistoricalData().catch((err) =>
