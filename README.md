@@ -1,15 +1,15 @@
 # MoneyWatch
 
-A privacy-first, client-side financial dashboard. All data is stored exclusively in your browser's `localStorage` — no backend, no accounts, nothing leaves your device.
+Ein datenschutzorientiertes, clientseitiges Finanz-Dashboard. Alle Daten werden ausschließlich im `localStorage` deines Browsers gespeichert – kein Backend, keine Accounts, nichts verlässt dein Gerät.
 
 ## Features
 
-- **PortfolioWatch** – Track exchange-listed securities (stocks, ETFs) with lots and realised sales
-- **PensionWatch** – Model pension income and project retirement scenarios
-- **BudgetWatch** – Track monthly expenses with category budgets and distribution charts
-- **AssetWatch** – Track non-exchange-listed investments (real estate, P2P lending, etc.)
+- **PortfolioWatch** – ETF- und Aktien-Portfolio verwalten: Käufe, Verkäufe und Performance-Analyse
+- **PensionWatch** – Rentenansprüche erfassen und Ruhestandsszenarien modellieren
+- **BudgetWatch** – Monatliche Ausgaben mit Kategorie-Budgets und Verteilungsdiagrammen verfolgen
+- **AssetWatch** – Nicht-börsengehandelte Investments verwalten (Immobilien, P2P-Kredite usw.)
 
-## Live Demo
+## Live-Demo
 
 [https://spindev.github.io/MoneyWatch/](https://spindev.github.io/MoneyWatch/)
 
@@ -17,11 +17,11 @@ A privacy-first, client-side financial dashboard. All data is stored exclusively
 
 ## Self-Hosting
 
-MoneyWatch ships as a minimal static-file Docker image (~30 MB) published to the GitHub Container Registry.
+MoneyWatch wird als minimales Docker-Image (~30 MB) im GitHub Container Registry bereitgestellt und enthält einen eingebetteten Express-Server für persistente Backups und Live-Kursdaten.
 
-### Quick Start with Docker Compose
+### Schnellstart mit Docker Compose
 
-1. Create a `docker-compose.yml` file with the following content:
+1. Erstelle eine `docker-compose.yml` mit folgendem Inhalt:
 
 ```yaml
 services:
@@ -29,60 +29,81 @@ services:
     image: ghcr.io/spindev/moneywatch:latest
     ports:
       - "8080:3000"
+    volumes:
+      - moneywatch_data:/data
+    environment:
+      # Intervall (in Millisekunden) für die Aktualisierung der Tageskurse (Standard: 300000 = 5 Minuten)
+      # FINANCE_QUOTE_INTERVAL_MS: 300000
+      # Uhrzeit (0–23, lokale Serverzeit) für die tägliche Aktualisierung der historischen Daten (Standard: 3)
+      # FINANCE_HISTORICAL_HOUR: 3
     restart: unless-stopped
+
+volumes:
+  moneywatch_data:
 ```
 
-2. Start the container:
+2. Container starten:
 
 ```bash
 docker compose up -d
 ```
 
-3. Open your browser at [http://localhost:8080](http://localhost:8080).
+3. Browser öffnen unter [http://localhost:8080](http://localhost:8080).
 
-### Updating to a Newer Version
+### Auf eine neuere Version aktualisieren
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-### Using a Specific Version
+### Bestimmte Version verwenden
 
-Replace `latest` with any published version tag (e.g. `v1.1.0`):
+Ersetze `latest` durch einen beliebigen veröffentlichten Versions-Tag (z. B. `v1.1.0`):
 
 ```yaml
 image: ghcr.io/spindev/moneywatch:v1.1.0
 ```
 
-All available tags are listed on the [packages page](https://github.com/spindev/MoneyWatch/pkgs/container/moneywatch).
+Alle verfügbaren Tags findest du auf der [Packages-Seite](https://github.com/spindev/MoneyWatch/pkgs/container/moneywatch).
 
-### Running with Plain Docker
+### Starten mit reinem Docker
 
 ```bash
 docker run -d -p 8080:3000 --restart unless-stopped ghcr.io/spindev/moneywatch:latest
 ```
 
+### Kursdaten im Docker-Betrieb
+
+Im Docker-Betrieb werden Marktdaten automatisch zur Laufzeit aktualisiert:
+
+| Datentyp | Intervall | Konfiguration |
+|---|---|---|
+| Tageskurse (Quotes) | alle 5 Minuten (Standard) | `FINANCE_QUOTE_INTERVAL_MS` |
+| Historische Kurse | täglich um 03:00 Uhr (Standard) | `FINANCE_HISTORICAL_HOUR` |
+
+Beim ersten Start werden beide Datensätze sofort abgerufen, falls sie fehlen oder veraltet sind.
+
 ---
 
-## Development
+## Entwicklung
 
 ```bash
-npm install     # install dependencies
-npm run dev     # start Vite dev server
-npm run build   # production build
-npm run lint    # run ESLint
+npm install     # Abhängigkeiten installieren
+npm run dev     # Vite-Entwicklungsserver starten
+npm run build   # Produktions-Build (tsc + vite)
+npm run lint    # ESLint ausführen
 ```
 
 ---
 
-## Contributing
+## Mitmachen
 
-Commits must follow [Conventional Commits](https://www.conventionalcommits.org/) — the project uses **semantic-release** to automate versioning and changelog generation from commit messages.
+Commits müssen dem [Conventional Commits](https://www.conventionalcommits.org/)-Format folgen – das Projekt nutzt **semantic-release** für automatisierte Versionierung und Changelog-Generierung.
 
-| Prefix | Effect |
+| Präfix | Effekt |
 |---|---|
-| `feat:` | new minor version |
-| `fix:` / `perf:` | new patch version |
-| `feat!:` or `BREAKING CHANGE:` footer | new major version |
-| `chore:`, `docs:`, `refactor:`, etc. | no release |
+| `feat:` | neue Minor-Version |
+| `fix:` / `perf:` | neue Patch-Version |
+| `feat!:` oder `BREAKING CHANGE:` im Footer | neue Major-Version |
+| `chore:`, `docs:`, `refactor:` usw. | kein Release |
