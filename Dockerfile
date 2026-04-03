@@ -26,9 +26,10 @@ WORKDIR /app
 COPY server/package*.json ./server/
 RUN cd server && npm ci --omit=dev
 
-# Copy compiled frontend and server source
+# Copy compiled frontend, server source, and ETF ticker list
 COPY --from=builder /app/dist ./dist
 COPY server/index.mjs ./server/index.mjs
+COPY src/apps/portfolio/etfs.json ./server/etfs.json
 
 EXPOSE 3000
 

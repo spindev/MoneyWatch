@@ -5,6 +5,11 @@ services:
       - "8080:3000"
     volumes:
       - moneywatch_data:/data
+    environment:
+      # Interval (in milliseconds) for refreshing current quotes (default: 300000 = 5 minutes)
+      # FINANCE_QUOTE_INTERVAL_MS: 300000
+      # Hour of day (0-23, local server time) for the daily historical-data refresh (default: 3)
+      # FINANCE_HISTORICAL_HOUR: 3
     restart: unless-stopped
 
 volumes:
