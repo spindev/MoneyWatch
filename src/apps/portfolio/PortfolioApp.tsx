@@ -32,6 +32,7 @@ import {
   todayIsoString,
   buildForecast,
 } from './utils/calculations';
+import { useSyncStatus } from '../../hooks/useSyncStatus';
 import { Holding, PortfolioSnapshot, PurchaseLot, SaleLot, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -73,6 +74,8 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
   const [showMarketData, setShowMarketData] = useState(false);
   const [saleSimulationHolding, setSaleSimulationHolding] = useState<Holding | null>(null);
   const [showPortfolioSimulation, setShowPortfolioSimulation] = useState(false);
+
+  const { syncStatus, triggerSync } = useSyncStatus();
 
   const isDark = settings.theme === 'dark';
 
@@ -276,6 +279,8 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
         onManualBuy={() => setShowManualBuy(true)}
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        syncStatus={syncStatus}
+        onSync={triggerSync}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">

@@ -19,10 +19,16 @@ RUN npx tsc -b && npx vite build --base /
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
 FROM node:20-alpine
 
-RUN npm install -g serve@14.2.6
+WORKDIR /app
 
-COPY --from=builder /app/dist /srv
+# Install server dependencies
+COPY server/package*.json ./server/
+RUN cd server && npm ci --omit=dev
+
+# Copy compiled frontend and server source
+COPY --from=builder /app/dist ./dist
+COPY server/index.mjs ./server/index.mjs
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "-l", "3000", "/srv"]
+CMD ["node", "server/index.mjs"]

@@ -1,0 +1,11 @@
+{
+  "name": "moneywatch-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "express": "^4.22.1",
+    "express-rate-limit": "^8.3.2"
+  }
+}

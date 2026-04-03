@@ -8,6 +8,7 @@ import { EmptyState } from './components/EmptyState';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadPensions, savePensions } from './services/pensionsService';
 import { calcTaxBreakdown } from './utils/calculations';
+import { useSyncStatus } from '../../hooks/useSyncStatus';
 import type { PensionEntry, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -24,6 +25,8 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
   const [page, setPage] = useState<Page>('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPension, setEditPension] = useState<PensionEntry | null>(null);
+
+  const { syncStatus, triggerSync } = useSyncStatus();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -92,6 +95,8 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
         }}
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        syncStatus={syncStatus}
+        onSync={triggerSync}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
