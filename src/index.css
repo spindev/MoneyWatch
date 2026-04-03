@@ -23,3 +23,10 @@ body {
   background-color: #0f172a;
   color: #f1f5f9;
 }
+
+/* Prevent mobile browser zoom on input focus (iOS requires font-size >= 16px) */
+input,
+select,
+textarea {
+  font-size: 1rem;
+}

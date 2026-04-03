@@ -107,7 +107,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="text-gray-600 dark:text-slate-400 text-xs font-medium">
               Renteneintritt
@@ -137,7 +137,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         </div>
 
         <div className="space-y-2">
-          <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datenverwaltung</p>
+          <BackupSection color="violet" />
           {confirmClear ? (
             <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-3 space-y-2">
               <p className="text-red-700 dark:text-red-300 text-xs">
@@ -170,8 +170,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             </button>
           )}
         </div>
-
-        <BackupSection color="violet" />
       </div>
     </div>
   );
