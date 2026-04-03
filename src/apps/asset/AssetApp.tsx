@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Header } from './components/Header';
 import { OverviewCards } from './components/OverviewCards';
 import { AssetList } from './components/AssetList';
@@ -6,7 +6,6 @@ import { AssetModal } from './components/AssetModal';
 import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadAssets, saveAssets } from './services/assetsService';
-import { useSyncStatus } from '../../hooks/useSyncStatus';
 import type { Asset, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -23,15 +22,6 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
   const [page, setPage] = useState<Page>('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editAsset, setEditAsset] = useState<Asset | null>(null);
-
-  const { syncStatus, triggerSync, confirmRestore, dismissRestore } = useSyncStatus();
-
-  // Sync after data mutations (skip the initial render)
-  const isFirstRenderRef = useRef(true);
-  useEffect(() => {
-    if (isFirstRenderRef.current) { isFirstRenderRef.current = false; return; }
-    triggerSync();
-  }, [assets, triggerSync]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -90,10 +80,6 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
         }}
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
-        syncStatus={syncStatus}
-        onSync={triggerSync}
-        onRestore={confirmRestore}
-        onDismissRestore={dismissRestore}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

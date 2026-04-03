@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Settings, Theme } from '../types';
+import { backupToServer, restoreFromServer, type BackupResult } from '../../../services/backupService';
 
 interface SettingsPageProps {
   settings: Settings;
@@ -18,6 +19,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const [incomeStr, setIncomeStr] = useState(
     settings.netIncome > 0 ? String(settings.netIncome).replace('.', ',') : '',
   );
+  const [backupState, setBackupState] = useState<BackupResult | 'idle' | 'loading'>('idle');
+  const [restoreState, setRestoreState] = useState<BackupResult | 'idle' | 'loading'>('idle');
+  const [confirmRestore, setConfirmRestore] = useState(false);
 
   const handleTheme = (theme: Theme) => {
     onSave({ ...settings, theme });
@@ -38,6 +42,31 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       setConfirmClear(false);
     } else {
       setConfirmClear(true);
+    }
+  };
+
+  const handleBackup = async () => {
+    setBackupState('loading');
+    const result = await backupToServer();
+    setBackupState(result);
+    if (result === 'success') {
+      setTimeout(() => setBackupState('idle'), 3000);
+    }
+  };
+
+  const handleRestoreClick = () => {
+    setConfirmRestore(true);
+  };
+
+  const handleRestoreConfirm = async () => {
+    setConfirmRestore(false);
+    setRestoreState('loading');
+    const result = await restoreFromServer();
+    if (result === 'success') {
+      window.location.reload();
+    } else {
+      setRestoreState(result);
+      setTimeout(() => setRestoreState('idle'), 3000);
     }
   };
 
@@ -156,6 +185,79 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               </svg>
               Alle Ausgaben löschen
             </button>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datensicherung</p>
+          {confirmRestore ? (
+            <div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
+              <p className="text-amber-700 dark:text-amber-300 text-xs">
+                Alle lokalen Daten werden mit dem Server-Backup überschrieben. Fortfahren?
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirmRestore(false)}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-medium border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={handleRestoreConfirm}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors"
+                >
+                  Ja, wiederherstellen
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={handleBackup}
+                disabled={backupState === 'loading' || restoreState === 'loading'}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {backupState === 'loading' ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                )}
+                Backup
+              </button>
+              <button
+                onClick={handleRestoreClick}
+                disabled={backupState === 'loading' || restoreState === 'loading'}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {restoreState === 'loading' ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                  </svg>
+                )}
+                Wiederherstellen
+              </button>
+            </div>
+          )}
+          {(backupState === 'success' || backupState === 'error' || backupState === 'offline') && (
+            <p className={`text-xs ${backupState === 'success' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+              {backupState === 'success' && 'Backup erfolgreich erstellt.'}
+              {backupState === 'error' && 'Backup fehlgeschlagen.'}
+              {backupState === 'offline' && 'Server nicht verfügbar.'}
+            </p>
+          )}
+          {(restoreState === 'error' || restoreState === 'offline') && (
+            <p className="text-xs text-red-600 dark:text-red-400">
+              {restoreState === 'error' && 'Wiederherstellung fehlgeschlagen.'}
+              {restoreState === 'offline' && 'Server nicht verfügbar.'}
+            </p>
           )}
         </div>
       </div>
