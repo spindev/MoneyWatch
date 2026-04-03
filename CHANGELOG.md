@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/spindev/MoneyWatch/compare/v1.3.0...v1.3.1) (2026-04-03)
+
+
+### Bug Fixes
+
+* **pensionwatch:** UI improvements – layout, mobile zoom, settings restructure, Docker-only backup ([0c8108e](https://github.com/spindev/MoneyWatch/commit/0c8108e33cf11a951ae10714a540e4d35c46f280))
+* re-add Datenverwaltung heading and fix Docker version injection ([b6c232a](https://github.com/spindev/MoneyWatch/commit/b6c232a910dbb8b06541b073f5287a7c1ab86675))
+
 # [1.3.0](https://github.com/spindev/MoneyWatch/compare/v1.2.1...v1.3.0) (2026-04-03)
 
 
