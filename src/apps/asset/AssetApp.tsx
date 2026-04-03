@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from './components/Header';
 import { OverviewCards } from './components/OverviewCards';
 import { AssetList } from './components/AssetList';
@@ -25,6 +25,13 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
   const [editAsset, setEditAsset] = useState<Asset | null>(null);
 
   const { syncStatus, triggerSync } = useSyncStatus();
+
+  // Sync after data mutations (skip the initial render)
+  const isFirstRenderRef = useRef(true);
+  useEffect(() => {
+    if (isFirstRenderRef.current) { isFirstRenderRef.current = false; return; }
+    triggerSync();
+  }, [assets, triggerSync]);
 
   useEffect(() => {
     const root = document.documentElement;
