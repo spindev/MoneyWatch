@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/spindev/MoneyWatch/compare/v1.2.0...v1.2.1) (2026-04-03)
+
+
+### Bug Fixes
+
+* **sync:** prevent empty-data push, prompt restore from server backup, fix offline flash on app switch ([9f71fd8](https://github.com/spindev/MoneyWatch/commit/9f71fd8313ff0088e0b442462f11e49e0668e13f))
+
 # [1.2.0](https://github.com/spindev/MoneyWatch/compare/v1.1.0...v1.2.0) (2026-04-03)
 
 
