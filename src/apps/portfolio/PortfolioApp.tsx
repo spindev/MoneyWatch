@@ -75,7 +75,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
   const [saleSimulationHolding, setSaleSimulationHolding] = useState<Holding | null>(null);
   const [showPortfolioSimulation, setShowPortfolioSimulation] = useState(false);
 
-  const { syncStatus, triggerSync } = useSyncStatus();
+  const { syncStatus, triggerSync, confirmRestore, dismissRestore } = useSyncStatus();
 
   const isDark = settings.theme === 'dark';
 
@@ -179,7 +179,6 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
     saveImportedSales({});
     setPage('portfolio');
     loadInitialData();
-    triggerSync();
   };
 
   const handleManualBuyConfirm = (isin: string, lot: PurchaseLot) => {
@@ -284,6 +283,8 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
         onSwitchApp={onSwitchApp}
         syncStatus={syncStatus}
         onSync={triggerSync}
+        onRestore={confirmRestore}
+        onDismissRestore={dismissRestore}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
