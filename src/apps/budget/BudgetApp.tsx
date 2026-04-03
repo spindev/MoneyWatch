@@ -6,6 +6,7 @@ import { ExpenseModal } from './components/ExpenseModal';
 import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadExpenses, saveExpenses } from './services/expensesService';
+import { useSyncStatus } from '../../hooks/useSyncStatus';
 import type { Expense, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -22,6 +23,8 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
   const [page, setPage] = useState<Page>('dashboard');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
+
+  const { syncStatus, triggerSync } = useSyncStatus();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -80,6 +83,8 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
         }}
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        syncStatus={syncStatus}
+        onSync={triggerSync}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { AppSwitcher, APP_DEFINITIONS } from '../../../components/AppSwitcher';
 import type { AppId } from '../../../components/AppSwitcher';
+import { SyncStatusIndicator } from '../../../components/SyncStatus';
+import type { SyncStatus } from '../../../services/syncService';
 
 interface HeaderProps {
   page: 'portfolio' | 'settings';
@@ -11,6 +13,8 @@ interface HeaderProps {
   onManualBuy?: () => void;
   activeApp: AppId;
   onSwitchApp: (app: AppId) => void;
+  syncStatus?: SyncStatus;
+  onSync?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,6 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   onManualBuy,
   activeApp,
   onSwitchApp,
+  syncStatus = 'offline',
+  onSync,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -106,6 +112,8 @@ export const Header: React.FC<HeaderProps> = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
+
+        <SyncStatusIndicator status={syncStatus} onSync={onSync} />
 
         <button
           onClick={() => onNavigate(page === 'settings' ? 'portfolio' : 'settings')}
