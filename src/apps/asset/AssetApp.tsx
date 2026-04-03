@@ -6,6 +6,7 @@ import { AssetModal } from './components/AssetModal';
 import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadAssets, saveAssets } from './services/assetsService';
+import { Footer } from '../../components/Footer';
 import type { Asset, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -144,6 +145,8 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
           }}
         />
       )}
+
+      <Footer />
     </div>
   );
 }

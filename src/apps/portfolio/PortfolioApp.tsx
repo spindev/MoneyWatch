@@ -8,6 +8,7 @@ import { SettingsPage } from './components/SettingsPage';
 import { MarketDataPage } from './components/MarketDataPage';
 import { CsvImportModal } from './components/CsvImportModal';
 import { ManualBuyModal } from './components/ManualBuyModal';
+import { Footer } from '../../components/Footer';
 import { SaleSimulationModal } from './components/SaleSimulationModal';
 import {
   DEMO_ETFS,
@@ -489,6 +490,8 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
           onClose={() => setShowPortfolioSimulation(false)}
         />
       )}
+
+      <Footer />
     </div>
   );
 }
