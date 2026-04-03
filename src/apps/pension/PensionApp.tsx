@@ -8,6 +8,7 @@ import { EmptyState } from './components/EmptyState';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadPensions, savePensions } from './services/pensionsService';
 import { calcTaxBreakdown } from './utils/calculations';
+import { Footer } from '../../components/Footer';
 import type { PensionEntry, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -165,6 +166,8 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
           }}
         />
       )}
+
+      <Footer />
     </div>
   );
 }

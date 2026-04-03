@@ -6,6 +6,7 @@ import { ExpenseModal } from './components/ExpenseModal';
 import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadExpenses, saveExpenses } from './services/expensesService';
+import { Footer } from '../../components/Footer';
 import type { Expense, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -146,6 +147,8 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
           }}
         />
       )}
+
+      <Footer />
     </div>
   );
 }
