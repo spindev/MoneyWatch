@@ -11,7 +11,9 @@
  * only, so switching apps does not overwrite unrelated data.
  */
 
-export type AppId = 'portfolio' | 'pension' | 'budget' | 'asset';
+import type { AppId } from '../components/appDefinitions';
+
+export type { AppId };
 
 /** localStorage keys that belong to each sub-app. */
 export const APP_BACKUP_KEYS: Record<AppId, readonly string[]> = {
