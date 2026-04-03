@@ -43,6 +43,9 @@ export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
   const [restoreState, setRestoreState] = useState<BackupResult | 'idle' | 'loading'>('idle');
   const [confirmRestore, setConfirmRestore] = useState(false);
 
+  // Only available in the Docker build (Express server provides /api/sync)
+  if (import.meta.env.VITE_IS_DOCKER !== 'true') return null;
+
   const isLoading = backupState === 'loading' || restoreState === 'loading';
 
   const handleBackup = async () => {
@@ -70,7 +73,6 @@ export const BackupSection: React.FC<BackupSectionProps> = ({ color }) => {
 
   return (
     <div className="space-y-2">
-      <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datensicherung</p>
       {confirmRestore ? (
         <div className={`rounded-lg border p-3 space-y-2 ${cc.panel}`}>
           <p className={`text-xs ${cc.text}`}>

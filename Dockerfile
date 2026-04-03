@@ -14,7 +14,8 @@ COPY . .
 RUN node scripts/fetch-finance-data.mjs
 
 # Build with base "/" so the app is served from the root path in Docker
-RUN npx tsc -b && npx vite build --base /
+# VITE_IS_DOCKER enables the backup/restore section (only available with the Express server)
+RUN env VITE_IS_DOCKER=true sh -c 'npx tsc -b && npx vite build --base /'
 
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
 FROM node:20-alpine
