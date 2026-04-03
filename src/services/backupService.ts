@@ -6,20 +6,24 @@
  * the custom Express server is present).  When running on GitHub Pages or
  * in plain `npm run dev` mode the API calls will fail and the status is
  * set to 'offline' so the app continues to work purely from localStorage.
+ *
+ * Backup and restore always operate on the keys of the currently active app
+ * only, so switching apps does not overwrite unrelated data.
  */
 
-export const BACKUP_KEYS: readonly string[] = [
-  'moneywatch_active_app',
-  'portfoliowatch_settings',
-  'portfoliowatch_imported_lots',
-  'portfoliowatch_imported_sales',
-  'pensionwatch_settings',
-  'pensionwatch_pensions',
-  'budgetwatch_settings',
-  'budgetwatch_expenses',
-  'assetwatch_assets',
-  'assetwatch_settings',
-];
+export type AppId = 'portfolio' | 'pension' | 'budget' | 'asset';
+
+/** localStorage keys that belong to each sub-app. */
+export const APP_BACKUP_KEYS: Record<AppId, readonly string[]> = {
+  portfolio: [
+    'portfoliowatch_settings',
+    'portfoliowatch_imported_lots',
+    'portfoliowatch_imported_sales',
+  ],
+  pension: ['pensionwatch_settings', 'pensionwatch_pensions'],
+  budget: ['budgetwatch_settings', 'budgetwatch_expenses'],
+  asset: ['assetwatch_assets', 'assetwatch_settings'],
+};
 
 export type BackupResult = 'success' | 'error' | 'offline';
 
@@ -39,28 +43,28 @@ async function fetchWithTimeout(
   }
 }
 
-function readLocalData(): Record<string, string> {
+/**
+ * Pushes the localStorage data of the given app to the server backup.
+ * Only the keys belonging to `appId` are sent; other apps' data on the
+ * server is left untouched.
+ * Returns 'success', 'error', or 'offline' (server unreachable).
+ */
+export async function backupAppToServer(appId: AppId): Promise<BackupResult> {
+  const keys = APP_BACKUP_KEYS[appId];
   const data: Record<string, string> = {};
-  for (const key of BACKUP_KEYS) {
+  for (const key of keys) {
     const value = localStorage.getItem(key);
     if (value !== null) {
       data[key] = value;
     }
   }
-  return data;
-}
-
-/**
- * Pushes all localStorage data to the server backup.
- * Returns 'success', 'error', or 'offline' (server unreachable).
- */
-export async function backupToServer(): Promise<BackupResult> {
   try {
-    const data = readLocalData();
     const res = await fetchWithTimeout(`${API_BASE}/data`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data }),
+      // `scope` tells the server which keys belong to this backup so it can
+      // remove keys that were intentionally deleted from localStorage.
+      body: JSON.stringify({ data, scope: keys }),
     });
     return res.ok ? 'success' : 'error';
   } catch {
@@ -69,17 +73,20 @@ export async function backupToServer(): Promise<BackupResult> {
 }
 
 /**
- * Restores all data from the server backup to localStorage.
+ * Restores the data of the given app from the server backup to localStorage.
+ * Only the keys belonging to `appId` are written; other apps' data in
+ * localStorage is left untouched.
  * Returns 'success', 'error', or 'offline' (server unreachable).
- * On success the caller should reload the page so all sub-app states
- * are re-initialised from the restored localStorage data.
+ * On success the caller should reload the page so the sub-app state is
+ * re-initialised from the restored localStorage data.
  */
-export async function restoreFromServer(): Promise<BackupResult> {
+export async function restoreAppFromServer(appId: AppId): Promise<BackupResult> {
+  const keys = APP_BACKUP_KEYS[appId];
   try {
     const res = await fetchWithTimeout(`${API_BASE}/data`);
     if (!res.ok) return 'error';
-    const json = await res.json() as { data: Record<string, string> };
-    for (const key of BACKUP_KEYS) {
+    const json = (await res.json()) as { data: Record<string, string> };
+    for (const key of keys) {
       const value = json.data[key];
       if (value !== undefined) {
         localStorage.setItem(key, value);

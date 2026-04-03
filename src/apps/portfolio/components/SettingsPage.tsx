@@ -149,7 +149,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
 
         <div className="space-y-2">
           <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datenverwaltung</p>
-          <BackupSection color="blue" />
+          <BackupSection appId="portfolio" color="blue" />
           {confirmClear ? (
             <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-3 space-y-2">
               <p className="text-red-700 dark:text-red-300 text-xs">
