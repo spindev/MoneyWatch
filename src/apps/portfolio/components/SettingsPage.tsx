@@ -128,7 +128,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
                 value={monthlySavingsRaw}
                 onChange={(e) => setMonthlySavingsRaw(e.target.value)}
                 onBlur={handleMonthlySavingsBlur}
-                className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-full px-3 py-2 rounded-lg text-base border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </label>
             <label className="block">
@@ -141,7 +141,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ settings, onSave, on
                 value={forecastYearsRaw}
                 onChange={(e) => setForecastYearsRaw(e.target.value)}
                 onBlur={handleForecastYearsBlur}
-                className="mt-1 w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-full px-3 py-2 rounded-lg text-base border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </label>
           </div>
