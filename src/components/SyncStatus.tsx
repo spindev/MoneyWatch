@@ -9,16 +9,14 @@ interface SyncStatusProps {
 
 /**
  * Compact sync-status indicator shown in each app header.
- * Invisible when running without the backend (status === 'offline').
+ * Always visible so the user can see offline/online state at a glance.
  */
 export const SyncStatusIndicator: React.FC<SyncStatusProps> = ({
   status,
   onSync,
 }) => {
-  if (status === 'offline') return null;
-
   const label: Record<SyncStatus, string> = {
-    offline: '',
+    offline: 'Offline – kein Server verfügbar',
     syncing: 'Synchronisiere…',
     synced:  'Synchronisiert',
     error:   'Sync fehlgeschlagen',
@@ -26,7 +24,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusProps> = ({
   };
 
   const colorClass: Record<SyncStatus, string> = {
-    offline: '',
+    offline: 'text-gray-400 dark:text-slate-600',
     syncing: 'text-blue-500 dark:text-blue-400',
     synced:  'text-emerald-500 dark:text-emerald-400',
     error:   'text-red-500 dark:text-red-400',
@@ -40,7 +38,17 @@ export const SyncStatusIndicator: React.FC<SyncStatusProps> = ({
       aria-label={label[status]}
       className={`p-2 rounded-lg transition-colors ${colorClass[status]} hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none`}
     >
-      {status === 'syncing' ? (
+      {status === 'offline' ? (
+        /* Cloud with X – no server available */
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 3l18 18M9.879 9.879A3 3 0 006.01 13H6a3 3 0 000 6h.01M18 13h.01A3 3 0 0018 7a5 5 0 00-9.9-1M15 13l-3 3m0 0l-3-3m3 3V9"
+          />
+        </svg>
+      ) : status === 'syncing' ? (
         /* Animated spinner */
         <svg
           className="w-4 h-4 animate-spin"

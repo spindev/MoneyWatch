@@ -179,6 +179,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
     saveImportedSales({});
     setPage('portfolio');
     loadInitialData();
+    triggerSync();
   };
 
   const handleManualBuyConfirm = (isin: string, lot: PurchaseLot) => {
@@ -189,6 +190,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
     saveImportedLots(newLots);
     setShowManualBuy(false);
     loadInitialData();
+    triggerSync();
   };
 
   const readFileAsText = (file: File, encoding: string): Promise<string> =>
@@ -241,6 +243,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
 
     setCsvImportLots(null);
     loadInitialData();
+    triggerSync();
   };
 
   const totalValue = calculateTotalValue(holdings);

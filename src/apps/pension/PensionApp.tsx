@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Header } from './components/Header';
 import { OverviewChart } from './components/OverviewChart';
 import { PensionTable } from './components/PensionTable';
@@ -27,6 +27,13 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
   const [editPension, setEditPension] = useState<PensionEntry | null>(null);
 
   const { syncStatus, triggerSync } = useSyncStatus();
+
+  // Sync after data mutations (skip the initial render)
+  const isFirstRenderRef = useRef(true);
+  useEffect(() => {
+    if (isFirstRenderRef.current) { isFirstRenderRef.current = false; return; }
+    triggerSync();
+  }, [pensions, triggerSync]);
 
   useEffect(() => {
     const root = document.documentElement;
