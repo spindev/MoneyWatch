@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/spindev/MoneyWatch/compare/v1.1.0...v1.2.0) (2026-04-03)
+
+
+### Features
+
+* **sync:** add localStorage-to-SQLite server sync for Docker deployments ([312fda5](https://github.com/spindev/MoneyWatch/commit/312fda59dddd097d03da40f8052367bb533fdc75))
+* **sync:** show offline icon, remove 60s polling, sync on data change ([46a1987](https://github.com/spindev/MoneyWatch/commit/46a1987f967b6fa316b3247dc92db7245a51877a))
+
 # [1.1.0](https://github.com/spindev/MoneyWatch/compare/v1.0.0...v1.1.0) (2026-03-31)
 
 
