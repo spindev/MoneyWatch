@@ -1,6 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#2563eb"/>
-  <polyline points="4,22 10,14 16,18 22,8 28,10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="20" cy="22" r="4" fill="none" stroke="white" stroke-width="1.8"/>
-  <path d="M20 20v2l1 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+  <!-- Coin circle -->
+  <circle cx="16" cy="16" r="11" fill="none" stroke="white" stroke-width="1.5" opacity="0.25"/>
+  <!-- € symbol: arc -->
+  <path d="M20 11.5 Q18.5 9.5 16 9.5 Q12 9.5 12 16 Q12 22.5 16 22.5 Q18.5 22.5 20 20.5"
+        stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- € symbol: two horizontal bars -->
+  <line x1="10" y1="14.5" x2="17.5" y2="14.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <line x1="10" y1="17.5" x2="17.5" y2="17.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- Upward trend arrow (top-right) -->
+  <path d="M22 10 L27 10 L27 15" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <line x1="21" y1="16" x2="26.5" y2="10.5" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
 </svg>
