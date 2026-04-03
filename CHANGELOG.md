@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/spindev/MoneyWatch/compare/v1.2.1...v1.3.0) (2026-04-03)
+
+
+### Features
+
+* add footer with version number and attribution to all pages ([19fa9ab](https://github.com/spindev/MoneyWatch/commit/19fa9abf9e3f45bba8df013f3b2c1cacdf5de216))
+* replace auto-sync with manual backup/restore in settings ([a332d91](https://github.com/spindev/MoneyWatch/commit/a332d915bef30e3748dd1a43e0e51a54f021fb29))
+
 ## [1.2.1](https://github.com/spindev/MoneyWatch/compare/v1.2.0...v1.2.1) (2026-04-03)
 
 
