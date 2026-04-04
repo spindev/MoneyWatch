@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/spindev/MoneyWatch/compare/v1.4.0...v1.4.1) (2026-04-04)
+
+
+### Bug Fixes
+
+* address code review – remove inline styles from modals, fix ExpenseModal label pattern ([c848655](https://github.com/spindev/MoneyWatch/commit/c8486555f35a6901bd9f8fb579ad7b27c98a2f67))
+
 # [1.4.0](https://github.com/spindev/MoneyWatch/compare/v1.3.1...v1.4.0) (2026-04-03)
 
 
