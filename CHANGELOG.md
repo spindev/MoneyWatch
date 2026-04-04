@@ -1,3 +1,17 @@
+## [1.4.2](https://github.com/spindev/MoneyWatch/compare/v1.4.1...v1.4.2) (2026-04-04)
+
+
+### Bug Fixes
+
+* **ci:** add minimal permissions to pr-title workflow ([abff3bb](https://github.com/spindev/MoneyWatch/commit/abff3bb5edb551bb177b53fc961be9a32a3cbb9b))
+* **release:** support feat! breaking change syntax in semantic-release config ([8be1d31](https://github.com/spindev/MoneyWatch/commit/8be1d317039dc32275281e140e1e08945a2e5fa4))
+* **release:** switch to conventionalcommits preset to support feat! syntax ([e9e4a56](https://github.com/spindev/MoneyWatch/commit/e9e4a569b04e6ec40c78d7b22b241c613f531d69))
+
+
+### Reverts
+
+* undo semantic-release config changes, restore original .releaserc.json ([ff8f5b3](https://github.com/spindev/MoneyWatch/commit/ff8f5b3168f881a9e5500cef86961a5a43dde1c3))
+
 ## [1.4.1](https://github.com/spindev/MoneyWatch/compare/v1.4.0...v1.4.1) (2026-04-04)
 
 
