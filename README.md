@@ -99,11 +99,4 @@ npm run lint    # ESLint ausführen
 
 ## Mitmachen
 
-Commits müssen dem [Conventional Commits](https://www.conventionalcommits.org/)-Format folgen – das Projekt nutzt **semantic-release** für automatisierte Versionierung und Changelog-Generierung.
-
-| Präfix | Effekt |
-|---|---|
-| `feat:` | neue Minor-Version |
-| `fix:` / `perf:` | neue Patch-Version |
-| `feat!:` oder `BREAKING CHANGE:` im Footer | neue Major-Version |
-| `chore:`, `docs:`, `refactor:` usw. | kein Release |
+Pull Requests und Issues sind willkommen. Releases werden manuell als GitHub Releases mit entsprechendem Tag (z. B. `v1.1.0`) veröffentlicht, woraufhin automatisch ein neues Docker-Image gebaut und gepusht wird.

@@ -2,54 +2,19 @@ name: Docker Build & Publish
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 permissions:
-  contents: write   # needed for semantic-release to push the release tag and CHANGELOG
-  packages: write   # needed to push to GitHub Container Registry
-  issues: write     # needed by @semantic-release/github to comment on issues/PRs
-  pull-requests: write
+  packages: write
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.semantic.outputs.new_release_version }}
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Semantic Release
-        id: semantic
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build-and-push:
-    needs: release
-    # Only build a new Docker image when semantic-release actually published a new version
-    if: needs.release.outputs.new_release_published == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # semantic-release commits the version bump back to main; fetch main explicitly so the
-          # Docker build picks up the updated package.json (and therefore the correct version).
-          ref: main
 
       - name: Set lowercase image name
         id: image
@@ -69,7 +34,7 @@ jobs:
           images: ${{ steps.image.outputs.name }}
           tags: |
             type=raw,value=latest
-            type=raw,value=v${{ needs.release.outputs.new_version }}
+            type=semver,pattern=v{{version}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
