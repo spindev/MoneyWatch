@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import type { Asset } from '../types';
 import { ASSET_CATEGORY_LABELS, ASSET_CATEGORY_BG, ASSET_CATEGORY_TEXT } from '../types';
+import { fmt, fmtDate } from '../../../lib/format';
 
 interface AssetListProps {
   assets: Asset[];
   onEdit: (asset: Asset) => void;
   onDelete: (id: string) => void;
-}
-
-function fmt(value: number): string {
-  return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function fmtDate(iso?: string): string {
-  if (!iso) return '';
-  const parts = iso.split('-');
-  return `${parts[2] ?? ''}.${parts[1] ?? ''}.${parts[0] ?? ''}`;
 }
 
 export const AssetList: React.FC<AssetListProps> = ({ assets, onEdit, onDelete }) => {

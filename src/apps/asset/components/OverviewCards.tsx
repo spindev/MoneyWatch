@@ -6,13 +6,10 @@ import {
   ASSET_CATEGORY_BG,
   ASSET_CATEGORY_TEXT,
 } from '../types';
+import { fmt } from '../../../lib/format';
 
 interface OverviewCardsProps {
   assets: Asset[];
-}
-
-function fmt(value: number): string {
-  return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 const CATEGORIES: AssetCategory[] = ['tagesgeld', 'immobilien', 'genossenschaft', 'sonstiges'];

@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { TaxBreakdown, TaxSettings } from '../types';
 import { SPARERPAUSCHBETRAG } from '../utils/calculations';
+import { fmt as fmtNum } from '../../../lib/format';
 
 interface OverviewChartProps {
   breakdown: TaxBreakdown;
   taxSettings: TaxSettings;
 }
 
-const fmt = (v: number) =>
-  v.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-
-const fmtPct = (v: number) =>
-  v.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %';
+const fmt = (v: number) => fmtNum(v) + ' €';
+const fmtPct = (v: number) => fmtNum(v) + ' %';
 
 export const OverviewChart: React.FC<OverviewChartProps> = ({
   breakdown,
@@ -292,7 +290,7 @@ const SummaryRow: React.FC<SummaryRowProps> = ({ label, value, color, max, highl
         />
       </div>
       <span className={`text-xs w-20 sm:w-24 text-right flex-shrink-0 tabular-nums ${highlight ? 'font-bold text-emerald-600 dark:text-emerald-400' : 'text-gray-700 dark:text-slate-300'}`}>
-        {value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+        {fmtNum(value)} €
       </span>
     </div>
   );
