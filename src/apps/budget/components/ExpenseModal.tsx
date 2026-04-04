@@ -49,8 +49,8 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
     onSave({ id: expense?.id ?? generateId(), name: trimmed, amount, frequency, date: `2000-${month}-${day}`, notes: notes.trim() || undefined });
   };
 
-  const inputCls = 'w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500';
-  const label = (text: string) => <label className="block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1">{text}</label>;
+  const inputCls = 'w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-base';
+  const labelCls = 'block text-gray-700 dark:text-slate-300 text-sm font-medium mb-1';
 
   return (
     <ModalShell
@@ -62,28 +62,28 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
         {error && <p className="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">{error}</p>}
 
         <div>
-          {label('Bezeichnung')}
-          <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(''); }} placeholder="z. B. Miete, Netflix, KFZ-Versicherung" className={inputCls} style={{ fontSize: '16px' }} />
+          <label className={labelCls}>Bezeichnung</label>
+          <input type="text" value={name} onChange={(e) => { setName(e.target.value); setError(''); }} placeholder="z. B. Miete, Netflix, KFZ-Versicherung" className={inputCls} />
         </div>
 
         <div className="flex flex-row gap-3">
           <div className="flex-1">
-            {label('Betrag')}
+            <label className={labelCls}>Betrag</label>
             <div className="relative">
               <span className="absolute inset-y-0 left-3 flex items-center text-gray-500 dark:text-slate-400 text-sm pointer-events-none">€</span>
-              <input type="text" inputMode="decimal" value={amountStr} onChange={(e) => { setAmountStr(e.target.value); setError(''); }} placeholder="0,00" className={`${inputCls} pl-7`} style={{ fontSize: '16px' }} />
+              <input type="text" inputMode="decimal" value={amountStr} onChange={(e) => { setAmountStr(e.target.value); setError(''); }} placeholder="0,00" className={`${inputCls} pl-7`} />
             </div>
           </div>
           <div className="flex-1">
-            {label('Datum')}
+            <label className={labelCls}>Datum</label>
             <div className="flex gap-1.5">
-              <select value={day} onChange={(e) => setDay(e.target.value)} className={inputCls} aria-label="Tag" style={{ fontSize: '16px' }}>
+              <select value={day} onChange={(e) => setDay(e.target.value)} className={inputCls} aria-label="Tag">
                 {Array.from({ length: maxDays }, (_, i) => {
                   const d = String(i + 1).padStart(2, '0');
                   return <option key={d} value={d}>{i + 1}</option>;
                 })}
               </select>
-              <select value={month} onChange={(e) => handleMonthChange(e.target.value)} className={inputCls} aria-label="Monat" style={{ fontSize: '16px' }}>
+              <select value={month} onChange={(e) => handleMonthChange(e.target.value)} className={inputCls} aria-label="Monat">
                 {GERMAN_MONTHS.map((mName, i) => {
                   const m = String(i + 1).padStart(2, '0');
                   return <option key={m} value={m}>{mName}</option>;
@@ -94,8 +94,8 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
         </div>
 
         <div>
-          {label('Turnus')}
-          <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)} className={inputCls} style={{ fontSize: '16px' }}>
+          <label className={labelCls}>Turnus</label>
+          <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)} className={inputCls}>
             {(Object.keys(FREQUENCY_LABELS) as ExpenseFrequency[]).map((f) => (
               <option key={f} value={f}>{FREQUENCY_LABELS[f]}</option>
             ))}
@@ -103,8 +103,8 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ expense, onSave, onC
         </div>
 
         <div>
-          {label('Notiz')}
-          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optionale Anmerkung" className={inputCls} style={{ fontSize: '16px' }} />
+          <label className={labelCls}>Notiz</label>
+          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optionale Anmerkung" className={inputCls} />
         </div>
 
         <div className="flex gap-3 pt-1">
