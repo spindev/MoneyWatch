@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Header } from './components/Header';
+import { AppHeader } from '../../components/AppHeader';
 import { OverviewCards } from './components/OverviewCards';
 import { AssetList } from './components/AssetList';
 import { AssetModal } from './components/AssetModal';
@@ -66,15 +66,13 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
-      <Header
-        page={page}
-        onNavigate={setPage}
-        onAddAsset={() => {
-          setEditAsset(null);
-          setShowAddModal(true);
-        }}
+      <AppHeader
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        isSettingsActive={page === 'settings'}
+        onSettings={() => setPage(page === 'settings' ? 'dashboard' : 'settings')}
+        onAdd={() => { setEditAsset(null); setShowAddModal(true); }}
+        addLabel="Anlage hinzufügen"
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

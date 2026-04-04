@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useTheme } from '../../hooks/useTheme';
-import { Header } from './components/Header';
+import { AppHeader } from '../../components/AppHeader';
 import { OverviewChart } from './components/OverviewChart';
 import { PensionTable } from './components/PensionTable';
 import { PensionModal } from './components/PensionModal';
@@ -78,15 +78,13 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
-      <Header
-        page={page}
-        onNavigate={setPage}
-        onAddPension={() => {
-          setEditPension(null);
-          setShowAddModal(true);
-        }}
+      <AppHeader
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        isSettingsActive={page === 'settings'}
+        onSettings={() => setPage(page === 'settings' ? 'dashboard' : 'settings')}
+        onAdd={() => { setEditPension(null); setShowAddModal(true); }}
+        addLabel="Rente hinzufügen"
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

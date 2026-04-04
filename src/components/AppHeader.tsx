@@ -9,6 +9,10 @@ interface AppHeaderProps {
   onSwitchApp: (app: AppId) => void;
   isSettingsActive: boolean;
   onSettings: () => void;
+  /** Single "add" action callback; renders a + button when provided. */
+  onAdd?: () => void;
+  /** aria-label for the add button (default: "Hinzufügen"). */
+  addLabel?: string;
   /** Extra action buttons rendered to the left of the settings button. */
   actions?: React.ReactNode;
   /** Optional status indicator (e.g. loading / error) shown in the middle. */
@@ -20,6 +24,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   onSwitchApp,
   isSettingsActive,
   onSettings,
+  onAdd,
+  addLabel = 'Hinzufügen',
   actions,
   statusIndicator,
 }) => {
@@ -66,6 +72,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         {/* Action buttons */}
         <div className="flex items-center gap-2">
           {actions}
+          {onAdd && (
+            <button
+              onClick={onAdd}
+              className="p-2 rounded-lg transition-colors text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
+              aria-label={addLabel}
+              title={addLabel}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={onSettings}
             className={`p-2 rounded-lg transition-colors ${
