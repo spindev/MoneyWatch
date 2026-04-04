@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Header } from './components/Header';
+import { AppHeader } from '../../components/AppHeader';
 import { OverviewTable } from './components/OverviewTable';
 import { ExpenseList } from './components/ExpenseList';
 import { ExpenseModal } from './components/ExpenseModal';
@@ -66,15 +66,13 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
-      <Header
-        page={page}
-        onNavigate={setPage}
-        onAddExpense={() => {
-          setEditExpense(null);
-          setShowAddModal(true);
-        }}
+      <AppHeader
         activeApp={activeApp}
         onSwitchApp={onSwitchApp}
+        isSettingsActive={page === 'settings'}
+        onSettings={() => setPage(page === 'settings' ? 'dashboard' : 'settings')}
+        onAdd={() => { setEditExpense(null); setShowAddModal(true); }}
+        addLabel="Ausgabe hinzufügen"
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

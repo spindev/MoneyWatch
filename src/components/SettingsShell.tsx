@@ -108,7 +108,7 @@ export const SettingsShell: React.FC<SettingsShellProps> = ({
         {/* Data management */}
         <div className="space-y-2">
           <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datenverwaltung</p>
-          <BackupSection appId={appId} color={APP_COLORS[appId]} />
+          <BackupSection appId={appId} />
           {confirmClear ? (
             <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-3 space-y-2">
               <p className="text-red-700 dark:text-red-300 text-xs">{clearMessage}</p>
@@ -142,11 +142,4 @@ export const SettingsShell: React.FC<SettingsShellProps> = ({
       </div>
     </div>
   );
-};
-
-const APP_COLORS: Record<AppId, 'blue' | 'violet' | 'amber' | 'emerald'> = {
-  portfolio: 'blue',
-  pension: 'violet',
-  budget: 'amber',
-  asset: 'emerald',
 };
