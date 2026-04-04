@@ -76,10 +76,8 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {/* ─── Overview Table ────────────────────────────────────────── */}
         <OverviewTable netIncome={settings.netIncome} expenses={expenses} />
 
-        {/* ─── Expense List ──────────────────────────────────────────── */}
         {expenses.length > 0 ? (
           <ExpenseList
             expenses={expenses}
@@ -91,7 +89,6 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
             onDelete={handleDeleteExpense}
           />
         ) : (
-          /* ─── Empty state ─────────────────────────────────────── */
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm p-10 text-center">
             <div className="w-14 h-14 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <svg className="w-7 h-7 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,7 +115,6 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
         )}
       </main>
 
-      {/* ─── Settings overlay ───────────────────────────────────────────── */}
       {page === 'settings' && (
         <SettingsPage
           settings={settings}
@@ -128,7 +124,6 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
         />
       )}
 
-      {/* ─── Add / Edit modal ───────────────────────────────────────────── */}
       {(showAddModal || editExpense != null) && (
         <ExpenseModal
           expense={editExpense}

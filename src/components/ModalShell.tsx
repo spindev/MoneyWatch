@@ -4,9 +4,7 @@ interface ModalShellProps {
   title: string;
   subtitle?: string;
   onClose: () => void;
-  /** Max-width Tailwind class (default: 'max-w-md'). */
   maxWidth?: string;
-  /** When true, uses overflow-y-auto for long forms. */
   scrollable?: boolean;
   children: React.ReactNode;
 }
@@ -20,7 +18,6 @@ export const ModalShell: React.FC<ModalShellProps> = ({ title, subtitle, onClose
       className={`w-full ${maxWidth} bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl my-auto`}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Header */}
       <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100 dark:border-slate-700">
         <div>
           <h2 className="text-gray-900 dark:text-white font-semibold text-lg">{title}</h2>

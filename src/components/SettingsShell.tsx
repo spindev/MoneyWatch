@@ -3,21 +3,15 @@ import { BackupSection } from './BackupSection';
 import type { AppId } from './appDefinitions';
 
 interface SettingsShellProps {
-  /** App ID used for BackupSection. */
   appId: AppId;
-  /** Sub-title line, e.g. "PortfolioWatch konfigurieren". */
   subtitle: string;
   theme: 'dark' | 'light';
   onThemeChange: (theme: 'dark' | 'light') => void;
   onClose: () => void;
   onClearData: () => void;
-  /** Button label for the clear action, e.g. "Portfolio löschen". */
   clearLabel: string;
-  /** Confirmation message shown before clearing, e.g. "Alle Käufe werden gelöscht. Fortfahren?". */
   clearMessage: string;
-  /** App-specific settings fields rendered above the data-management section. */
   children?: React.ReactNode;
-  /** Active-color class used for the theme-toggle highlight, e.g. "bg-blue-600 border-blue-500". */
   activeColorClass: string;
 }
 
@@ -64,7 +58,6 @@ export const SettingsShell: React.FC<SettingsShellProps> = ({
         className="absolute top-16 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 shadow-2xl space-y-6 max-h-[calc(100vh-5rem)] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-gray-900 dark:text-white font-semibold text-lg">Einstellungen</h2>
@@ -81,7 +74,6 @@ export const SettingsShell: React.FC<SettingsShellProps> = ({
           </button>
         </div>
 
-        {/* Theme toggle */}
         <div className="space-y-2">
           <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Darstellung</p>
           <div className="flex gap-2">
@@ -102,10 +94,8 @@ export const SettingsShell: React.FC<SettingsShellProps> = ({
           </div>
         </div>
 
-        {/* App-specific fields */}
         {children}
 
-        {/* Data management */}
         <div className="space-y-2">
           <p className="text-gray-700 dark:text-slate-300 text-sm font-medium">Datenverwaltung</p>
           <BackupSection appId={appId} />

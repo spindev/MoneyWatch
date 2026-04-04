@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-/** Applies the dark/light theme class to the document root. */
 export function useTheme(theme: 'dark' | 'light'): void {
   useEffect(() => {
     if (theme === 'dark') {
