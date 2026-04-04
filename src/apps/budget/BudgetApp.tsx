@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { OverviewTable } from './components/OverviewTable';
 import { ExpenseList } from './components/ExpenseList';
@@ -7,6 +7,7 @@ import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadExpenses, saveExpenses } from './services/expensesService';
 import { Footer } from '../../components/Footer';
+import { useTheme } from '../../hooks/useTheme';
 import type { Expense, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -24,14 +25,7 @@ export function BudgetApp({ activeApp, onSwitchApp }: BudgetAppProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [settings.theme]);
+  useTheme(settings.theme);
 
   const handleSaveSettings = useCallback((s: Settings) => {
     setSettings(s);
