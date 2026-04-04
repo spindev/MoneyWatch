@@ -35,6 +35,7 @@ import {
 } from './utils/calculations';
 import { Holding, PortfolioSnapshot, PurchaseLot, SaleLot, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
+import { useTheme } from '../../hooks/useTheme';
 
 const CURRENCY = 'EUR';
 const LOCALE = 'de-DE';
@@ -75,11 +76,7 @@ export function PortfolioApp({ activeApp, onSwitchApp }: PortfolioAppProps) {
   const [saleSimulationHolding, setSaleSimulationHolding] = useState<Holding | null>(null);
   const [showPortfolioSimulation, setShowPortfolioSimulation] = useState(false);
 
-  const isDark = settings.theme === 'dark';
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-  }, [isDark]);
+  useTheme(settings.theme);
 
   const loadInitialData = useCallback(async () => {
     setIsLoading(true);

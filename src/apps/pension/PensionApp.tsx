@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 import { Header } from './components/Header';
 import { OverviewChart } from './components/OverviewChart';
 import { PensionTable } from './components/PensionTable';
@@ -26,14 +27,7 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPension, setEditPension] = useState<PensionEntry | null>(null);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [settings.theme]);
+  useTheme(settings.theme);
 
   const handleSaveSettings = useCallback((s: Settings) => {
     setSettings(s);

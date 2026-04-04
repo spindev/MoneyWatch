@@ -1,17 +1,6 @@
+import { createListStorage } from '../../../lib/storage';
 import type { PensionEntry } from '../types';
 
-const PENSIONS_KEY = 'pensionwatch_pensions';
-
-export function loadPensions(): PensionEntry[] {
-  try {
-    const raw = localStorage.getItem(PENSIONS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as PensionEntry[];
-  } catch {
-    return [];
-  }
-}
-
-export function savePensions(pensions: PensionEntry[]): void {
-  localStorage.setItem(PENSIONS_KEY, JSON.stringify(pensions));
-}
+const svc = createListStorage<PensionEntry>('pensionwatch_pensions');
+export const loadPensions = svc.load;
+export const savePensions = svc.save;

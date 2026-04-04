@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { OverviewCards } from './components/OverviewCards';
 import { AssetList } from './components/AssetList';
@@ -7,6 +7,7 @@ import { SettingsPage } from './components/SettingsPage';
 import { loadSettings, saveSettings } from './services/settingsService';
 import { loadAssets, saveAssets } from './services/assetsService';
 import { Footer } from '../../components/Footer';
+import { useTheme } from '../../hooks/useTheme';
 import type { Asset, Settings } from './types';
 import type { AppId } from '../../components/AppSwitcher';
 
@@ -24,14 +25,7 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editAsset, setEditAsset] = useState<Asset | null>(null);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }, [settings.theme]);
+  useTheme(settings.theme);
 
   const handleSaveSettings = useCallback((s: Settings) => {
     setSettings(s);
