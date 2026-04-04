@@ -3,6 +3,11 @@
  * Reduces boilerplate across all sub-apps.
  */
 
+/** Generates a short unique ID for new records. */
+export function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
 /** Creates a typed settings service for a given localStorage key. */
 export function createSettingsService<T>(key: string, defaults: T) {
   return {
