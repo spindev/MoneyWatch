@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Expense, ExpenseFrequency } from '../types';
 import { FREQUENCY_DIVISOR } from '../types';
+import { fmt } from '../../../lib/format';
 
 interface OverviewTableProps {
   netIncome: number;
@@ -20,10 +21,6 @@ const PERIOD_MULTIPLIER: Record<Period, number> = {
   quarterly: 3,
   yearly: 12,
 };
-
-function fmt(value: number): string {
-  return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 function fmtPct(value: number): string {
   return value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });

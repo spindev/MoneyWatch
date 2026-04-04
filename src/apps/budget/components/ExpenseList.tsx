@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import type { Expense, ExpenseFrequency } from '../types';
 import { FREQUENCY_LABELS, FREQUENCY_DIVISOR } from '../types';
+import { fmt } from '../../../lib/format';
 
 interface ExpenseListProps {
   expenses: Expense[];
   netIncome: number;
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
-}
-
-function fmt(value: number): string {
-  return value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function fmtPct(value: number): string {
