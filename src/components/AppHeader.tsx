@@ -9,13 +9,9 @@ interface AppHeaderProps {
   onSwitchApp: (app: AppId) => void;
   isSettingsActive: boolean;
   onSettings: () => void;
-  /** Single "add" action callback; renders a + button when provided. */
   onAdd?: () => void;
-  /** aria-label for the add button (default: "Hinzufügen"). */
   addLabel?: string;
-  /** Extra action buttons rendered to the left of the settings button. */
   actions?: React.ReactNode;
-  /** Optional status indicator (e.g. loading / error) shown in the middle. */
   statusIndicator?: React.ReactNode;
 }
 
@@ -35,7 +31,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 px-4 sm:px-6 py-4 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-        {/* Logo + app switcher */}
         <div className="relative">
           <button
             onClick={() => setShowSwitcher((v) => !v)}
@@ -62,14 +57,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           )}
         </div>
 
-        {/* Status indicator */}
         {statusIndicator && (
           <div className="flex-1 flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400 min-w-0">
             {statusIndicator}
           </div>
         )}
 
-        {/* Action buttons */}
         <div className="flex items-center gap-2">
           {actions}
           {onAdd && (

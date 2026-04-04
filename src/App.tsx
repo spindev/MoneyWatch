@@ -8,10 +8,8 @@ import type { AppId } from './components/AppSwitcher';
 const ACTIVE_APP_KEY = 'moneywatch_active_app';
 
 function loadActiveApp(): AppId {
-  try {
-    const raw = localStorage.getItem(ACTIVE_APP_KEY);
-    if (raw === 'portfolio' || raw === 'pension' || raw === 'budget' || raw === 'asset') return raw;
-  } catch { /* ignore */ }
+  const raw = localStorage.getItem(ACTIVE_APP_KEY);
+  if (raw === 'portfolio' || raw === 'pension' || raw === 'budget' || raw === 'asset') return raw;
   return 'portfolio';
 }
 
@@ -20,7 +18,7 @@ function App() {
 
   const handleSwitchApp = (app: AppId) => {
     setActiveApp(app);
-    try { localStorage.setItem(ACTIVE_APP_KEY, app); } catch { /* ignore */ }
+    localStorage.setItem(ACTIVE_APP_KEY, app);
   };
 
   return (

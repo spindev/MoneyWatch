@@ -76,10 +76,8 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {/* ─── Overview ──────────────────────────────────────────────── */}
         <OverviewCards assets={assets} />
 
-        {/* ─── Asset List / Empty state ──────────────────────────────── */}
         {assets.length > 0 ? (
           <AssetList
             assets={assets}
@@ -116,7 +114,6 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
         )}
       </main>
 
-      {/* ─── Settings overlay ───────────────────────────────────────────── */}
       {page === 'settings' && (
         <SettingsPage
           settings={settings}
@@ -126,7 +123,6 @@ export function AssetApp({ activeApp, onSwitchApp }: AssetAppProps) {
         />
       )}
 
-      {/* ─── Add / Edit modal ───────────────────────────────────────────── */}
       {(showAddModal || editAsset != null) && (
         <AssetModal
           asset={editAsset}

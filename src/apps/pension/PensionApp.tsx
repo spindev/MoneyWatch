@@ -90,7 +90,6 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
         {pensions.length === 0 ? (
-          /* ─── Empty / Welcome State ──────────────────────────────── */
           <EmptyState
             onAddPension={() => {
               setEditPension(null);
@@ -99,13 +98,11 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
           />
         ) : (
           <>
-            {/* ─── Monthly Overview ───────────────────────────────── */}
             <OverviewChart
               breakdown={breakdown}
               taxSettings={settings.tax}
             />
 
-            {/* ─── Pension Table ───────────────────────────────────── */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-gray-900 dark:text-white font-semibold">
@@ -137,7 +134,6 @@ export function PensionApp({ activeApp, onSwitchApp }: PensionAppProps) {
         )}
       </main>
 
-      {/* ─── Modals / Overlays ────────────────────────────────────────────── */}
       {page === 'settings' && (
         <SettingsPage
           settings={settings}
