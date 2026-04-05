@@ -8,6 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
+  Legend,
   type TooltipProps,
 } from 'recharts';
 import { type ValueType, type NameType } from 'recharts/types/component/DefaultTooltipContent';
@@ -24,6 +26,13 @@ interface BudgetChartsProps {
 
 type ChartView = 'breakdown' | 'ratio';
 
+const PERIODS = [
+  { label: 'Monatlich', multiplier: 1 },
+  { label: 'Vierteljährlich', multiplier: 3 },
+  { label: 'Jährlich', multiplier: 12 },
+] as const;
+
+// ── Breakdown tooltip ────────────────────────────────────────────────────────
 const BreakdownTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
     return (
@@ -36,15 +45,22 @@ const BreakdownTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>
   return null;
 };
 
-interface RatioEntry { name: string; amount: number; color: string }
+// ── Stacked ratio tooltip ────────────────────────────────────────────────────
+interface StackedEntry { period: string; ausgaben: number; frei: number; defizit: number; einkommen: number }
 
 const RatioTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
-    const entry = payload[0].payload as RatioEntry;
+    const d = payload[0].payload as StackedEntry;
+    const hasDefizit = d.defizit > 0;
     return (
-      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg p-2 text-xs shadow-lg">
-        <p className="text-gray-600 dark:text-slate-300 font-medium mb-0.5">{entry.name}</p>
-        <p style={{ color: entry.color }}>{fmt(payload[0].value as number)} €</p>
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-600 rounded-lg p-2 text-xs shadow-lg space-y-0.5">
+        <p className="text-gray-600 dark:text-slate-300 font-medium mb-1">{d.period}</p>
+        <p className="text-emerald-500">Einkommen: {fmt(d.einkommen)} €</p>
+        <p className="text-red-500">Ausgaben: {fmt(d.ausgaben)} €</p>
+        {hasDefizit
+          ? <p className="text-orange-500">Defizit: {fmt(d.defizit)} €</p>
+          : <p className="text-blue-500">Frei: {fmt(d.frei)} €</p>
+        }
       </div>
     );
   }
@@ -59,10 +75,9 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
 }) => {
   const [view, setView] = useState<ChartView>('breakdown');
 
-  const periodIncome = netIncome * multiplier;
-  const periodExpenses = expenses.reduce((sum, e) => sum + monthlyAmount(e) * multiplier, 0);
-  const remaining = periodIncome - periodExpenses;
+  const totalMonthlyExpenses = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
 
+  // Breakdown data for the selected period
   const breakdownData = [...expenses]
     .sort((a, b) => monthlyAmount(b) - monthlyAmount(a))
     .map((e) => ({
@@ -70,15 +85,19 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
       amount: monthlyAmount(e) * multiplier,
     }));
 
-  const ratioData: RatioEntry[] = [
-    { name: 'Einkommen', amount: periodIncome, color: '#10b981' },
-    { name: 'Ausgaben', amount: periodExpenses, color: '#ef4444' },
-    {
-      name: remaining >= 0 ? 'Frei' : 'Defizit',
-      amount: Math.abs(remaining),
-      color: remaining >= 0 ? '#3b82f6' : '#f97316',
-    },
-  ];
+  // Stacked ratio data for all three periods
+  const stackedData: StackedEntry[] = PERIODS.map(({ label, multiplier: m }) => {
+    const inc = netIncome * m;
+    const exp = totalMonthlyExpenses * m;
+    const rem = inc - exp;
+    return {
+      period: label,
+      einkommen: inc,
+      ausgaben: exp,
+      frei: rem >= 0 ? rem : 0,
+      defizit: rem < 0 ? Math.abs(rem) : 0,
+    };
+  });
 
   if (expenses.length === 0) return null;
 
@@ -87,7 +106,7 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
       {/* Chart switcher */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-500 dark:text-slate-400">
-          {view === 'breakdown' ? `Ausgaben ${periodLabel}` : `Einnahmen / Ausgaben ${periodLabel}`}
+          {view === 'breakdown' ? `Ausgaben ${periodLabel}` : 'Einnahmen / Ausgaben'}
         </span>
         <div className="flex gap-1 bg-gray-200 dark:bg-slate-600 rounded-lg p-0.5">
           <button
@@ -115,8 +134,8 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
 
       {/* Expense breakdown bar chart */}
       {view === 'breakdown' && (
-        <ResponsiveContainer width="100%" height={190}>
-          <BarChart data={breakdownData} margin={{ top: 4, right: 8, left: 0, bottom: 24 }}>
+        <ResponsiveContainer width="100%" height={210}>
+          <BarChart data={breakdownData} margin={{ top: 18, right: 8, left: 0, bottom: 24 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(156,163,175,0.3)" />
             <XAxis
               dataKey="name"
@@ -133,6 +152,12 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
             />
             <Tooltip content={<BreakdownTooltip />} cursor={{ fill: 'rgba(156,163,175,0.1)' }} />
             <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+              <LabelList
+                dataKey="amount"
+                position="top"
+                formatter={(v: number) => fmt(v)}
+                style={{ fontSize: 9, fill: '#6b7280' }}
+              />
               {breakdownData.map((_, idx) => (
                 <Cell
                   key={idx}
@@ -145,22 +170,53 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({
         </ResponsiveContainer>
       )}
 
-      {/* Income vs Expenses ratio bar chart */}
+      {/* Stacked income/expenses ratio chart – one group per period */}
       {view === 'ratio' && (
-        <ResponsiveContainer width="100%" height={190}>
-          <BarChart data={ratioData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
+        <ResponsiveContainer width="100%" height={210}>
+          <BarChart data={stackedData} margin={{ top: 18, right: 8, left: 0, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(156,163,175,0.3)" />
-            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9ca3af' }} />
+            <XAxis dataKey="period" tick={{ fontSize: 10, fill: '#9ca3af' }} />
             <YAxis
               tick={{ fontSize: 10, fill: '#9ca3af' }}
               tickFormatter={(v: number) => fmt(v)}
               width={64}
             />
             <Tooltip content={<RatioTooltip />} cursor={{ fill: 'rgba(156,163,175,0.1)' }} />
-            <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-              {ratioData.map((entry, idx) => (
-                <Cell key={idx} fill={entry.color} />
-              ))}
+            <Legend
+              iconSize={8}
+              iconType="square"
+              formatter={(value) =>
+                value === 'ausgaben' ? 'Ausgaben' :
+                value === 'frei' ? 'Frei' : 'Defizit'
+              }
+              wrapperStyle={{ fontSize: 10 }}
+            />
+            {/* Ausgaben – always shown, bottom segment */}
+            <Bar dataKey="ausgaben" stackId="ratio" fill="#ef4444" radius={[0, 0, 0, 0]} name="ausgaben">
+              <LabelList
+                dataKey="ausgaben"
+                position="inside"
+                formatter={(v: number) => (v > 0 ? fmt(v) : '')}
+                style={{ fontSize: 9, fill: '#fff' }}
+              />
+            </Bar>
+            {/* Frei – top segment when budget positive */}
+            <Bar dataKey="frei" stackId="ratio" fill="#3b82f6" radius={[4, 4, 0, 0]} name="frei">
+              <LabelList
+                dataKey="frei"
+                position="top"
+                formatter={(v: number) => (v > 0 ? fmt(v) : '')}
+                style={{ fontSize: 9, fill: '#6b7280' }}
+              />
+            </Bar>
+            {/* Defizit – top segment when budget exceeded */}
+            <Bar dataKey="defizit" stackId="ratio" fill="#f97316" radius={[4, 4, 0, 0]} name="defizit">
+              <LabelList
+                dataKey="defizit"
+                position="top"
+                formatter={(v: number) => (v > 0 ? fmt(v) : '')}
+                style={{ fontSize: 9, fill: '#6b7280' }}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
