@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { Expense, ExpenseFrequency } from '../types';
-import { FREQUENCY_DIVISOR } from '../types';
+import type { Expense } from '../types';
 import { fmt } from '../../../lib/format';
+import { BudgetCharts } from './BudgetCharts';
+import { monthlyAmount } from '../utils';
 
 interface OverviewTableProps {
   netIncome: number;
@@ -21,17 +22,6 @@ const PERIOD_MULTIPLIER: Record<Period, number> = {
   quarterly: 3,
   yearly: 12,
 };
-
-function fmtPct(value: number): string {
-  return value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-}
-
-/** Minimum bar segment width (%) below which the percentage label is hidden */
-const MIN_PCT_LABEL = 12;
-
-function monthlyAmount(expense: Expense): number {
-  return expense.amount / FREQUENCY_DIVISOR[expense.frequency as ExpenseFrequency];
-}
 
 export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expenses }) => {
   const [period, setPeriod] = useState<Period>('monthly');
@@ -54,9 +44,6 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
   const periodIncome = netIncome * multiplier;
   const periodExpenses = totalMonthlyExpenses * multiplier;
   const remaining = periodIncome - periodExpenses;
-  // Cap expenses at 100% so the two bar segments always sum to 100%
-  const expensePct = periodIncome > 0 ? Math.min((periodExpenses / periodIncome) * 100, 100) : 0;
-  const remainingPct = 100 - expensePct;
 
   return (
     <>
@@ -167,7 +154,7 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
           remaining >= 0
             ? 'bg-emerald-50 dark:bg-emerald-900/10'
             : 'bg-red-50 dark:bg-red-900/10'
-        }${periodIncome <= 0 ? ' rounded-b-2xl' : ''}`}>
+        }${expenses.length === 0 ? ' rounded-b-2xl' : ''}`}>
           <div className="flex items-center gap-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
               remaining >= 0
@@ -200,39 +187,13 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
         </div>
       </div>
 
-      {/* Dual-color progress bar */}
-      {periodIncome > 0 && (
-        <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-slate-700/30 rounded-b-2xl">
-          <div className="h-5 rounded-full overflow-hidden flex">
-            <div
-              className="h-full bg-red-500 transition-all duration-300 flex items-center justify-center"
-              style={{ width: `${expensePct}%` }}
-            >
-              {expensePct >= MIN_PCT_LABEL && (
-                <span className="text-white text-xs font-medium px-1 truncate">{fmtPct(expensePct)} %</span>
-              )}
-            </div>
-            <div
-              className="h-full bg-emerald-500 transition-all duration-300 flex items-center justify-center"
-              style={{ width: `${remainingPct}%` }}
-            >
-              {remainingPct >= MIN_PCT_LABEL && (
-                <span className="text-white text-xs font-medium px-1 truncate">{fmtPct(remainingPct)} %</span>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-between text-xs text-gray-500 dark:text-slate-400 mt-1">
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-              Ausgaben
-            </span>
-            <span className="flex items-center gap-1">
-              Frei
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-            </span>
-          </div>
-        </div>
-      )}
+      {/* Budget charts (expense breakdown + income/expenses ratio) */}
+      <BudgetCharts
+        netIncome={netIncome}
+        expenses={expenses}
+        multiplier={multiplier}
+        periodLabel={PERIOD_LABELS[period]}
+      />
     </div>
     </>
   );
