@@ -33,34 +33,75 @@ interface PeriodEntry {
   defizit: number;
 }
 
-// Generate one data entry per period unit (month / quarter / year)
-function buildPeriodData(
-  period: Period,
-  totalMonthlyExpenses: number,
-  netIncome: number,
-): PeriodEntry[] {
-  const slots: { label: string; multiplier: number }[] =
-    period === 'monthly'
-      ? ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'].map(
-          (l) => ({ label: l, multiplier: 1 }),
-        )
-      : period === 'quarterly'
-      ? ['Q1', 'Q2', 'Q3', 'Q4'].map((l) => ({ label: l, multiplier: 3 }))
-      : [{ label: String(new Date().getFullYear()), multiplier: 12 }];
+const MONTH_LABELS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
-  return slots.map(({ label, multiplier }) => {
-    const ausgaben = totalMonthlyExpenses * multiplier;
-    const einkommen = netIncome * multiplier;
-    const rem = einkommen - ausgaben;
-    return {
-      label,
-      ausgaben,
-      einkommen,
-      frei: rem >= 0 ? rem : 0,
-      defizit: rem < 0 ? Math.abs(rem) : 0,
-    };
-  });
+/** Returns the 0-indexed month (0 = Jan) from the expense's due date, defaulting to 0. */
+function expenseDueMonth(expense: Expense): number {
+  if (expense.date) return new Date(expense.date).getMonth();
+  return 0;
 }
+
+function toPeriodEntry(label: string, ausgaben: number, einkommen: number): PeriodEntry {
+  const rem = einkommen - ausgaben;
+  return { label, ausgaben, einkommen, frei: rem >= 0 ? rem : 0, defizit: rem < 0 ? Math.abs(rem) : 0 };
+}
+
+/**
+ * Builds per-slot data using actual payment timing.
+ * - monthly expenses: appear in every month / quarter
+ * - quarterly expenses: appear in the 4 months they actually fall (from due date)
+ * - yearly expenses: appear only in the month / quarter they fall due
+ */
+function buildActualData(period: Period, expenses: Expense[], netIncome: number): PeriodEntry[] {
+  if (period === 'monthly') {
+    const ausgabenPerMonth = new Array(12).fill(0) as number[];
+    for (const e of expenses) {
+      const m = expenseDueMonth(e);
+      if (e.frequency === 'monthly') {
+        for (let i = 0; i < 12; i++) ausgabenPerMonth[i] += e.amount;
+      } else if (e.frequency === 'quarterly') {
+        for (let i = 0; i < 4; i++) ausgabenPerMonth[(m + i * 3) % 12] += e.amount;
+      } else {
+        ausgabenPerMonth[m] += e.amount;
+      }
+    }
+    return MONTH_LABELS.map((label, idx) =>
+      toPeriodEntry(label, ausgabenPerMonth[idx], netIncome),
+    );
+  }
+
+  if (period === 'quarterly') {
+    const ausgabenPerQuarter = new Array(4).fill(0) as number[];
+    for (const e of expenses) {
+      const q = Math.floor(expenseDueMonth(e) / 3);
+      if (e.frequency === 'monthly') {
+        for (let i = 0; i < 4; i++) ausgabenPerQuarter[i] += e.amount * 3;
+      } else if (e.frequency === 'quarterly') {
+        for (let i = 0; i < 4; i++) ausgabenPerQuarter[i] += e.amount;
+      } else {
+        ausgabenPerQuarter[q] += e.amount;
+      }
+    }
+    return ['Q1', 'Q2', 'Q3', 'Q4'].map((label, idx) =>
+      toPeriodEntry(label, ausgabenPerQuarter[idx], netIncome * 3),
+    );
+  }
+
+  // yearly: single bar – full annual spend
+  const ausgaben = expenses.reduce((sum, e) => sum + monthlyAmount(e) * 12, 0);
+  return [toPeriodEntry(String(new Date().getFullYear()), ausgaben, netIncome * 12)];
+}
+
+const CHART_META: Record<ChartView, { title: string; description: string }> = {
+  ausgaben: {
+    title: 'Tatsächliche Ausgaben',
+    description: 'Kosten werden zum jeweiligen Fälligkeitszeitraum erfasst, nicht normalisiert.',
+  },
+  ratio: {
+    title: 'Einnahmen vs. Ausgaben',
+    description: 'Frei verfügbares Budget nach tatsächlichen Zahlungen pro Zeitraum.',
+  },
+};
 
 // Compact € formatter for Y-axis ticks
 const fmtY = (v: number): string => {
@@ -105,16 +146,20 @@ const RatioTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) =>
 export const BudgetCharts: React.FC<BudgetChartsProps> = ({ netIncome, expenses, period }) => {
   const [view, setView] = useState<ChartView>('ausgaben');
 
-  const totalMonthlyExpenses = expenses.reduce((sum, e) => sum + monthlyAmount(e), 0);
-  const data = buildPeriodData(period, totalMonthlyExpenses, netIncome);
+  const data = buildActualData(period, expenses, netIncome);
+  const meta = CHART_META[view];
 
   if (expenses.length === 0) return null;
 
   return (
     <div className="px-4 sm:px-6 py-4 bg-gray-50 dark:bg-slate-700/30 rounded-b-2xl space-y-3">
-      {/* Chart switcher */}
-      <div className="flex items-center justify-end">
-        <div className="flex gap-1 bg-gray-200 dark:bg-slate-600 rounded-lg p-0.5">
+      {/* Header: title + description + chart switcher */}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-gray-800 dark:text-white">{meta.title}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{meta.description}</p>
+        </div>
+        <div className="flex gap-1 bg-gray-200 dark:bg-slate-600 rounded-lg p-0.5 flex-shrink-0">
           <button
             onClick={() => setView('ausgaben')}
             className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${
@@ -138,7 +183,7 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({ netIncome, expenses,
         </div>
       </div>
 
-      {/* Total expenses per period */}
+      {/* Total expenses per period – actual payment timing */}
       {view === 'ausgaben' && (
         <ResponsiveContainer width="100%" height={190}>
           <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
@@ -155,7 +200,7 @@ export const BudgetCharts: React.FC<BudgetChartsProps> = ({ netIncome, expenses,
         </ResponsiveContainer>
       )}
 
-      {/* Stacked income/expenses ratio – one bar per period unit */}
+      {/* Stacked income/expenses ratio – actual payment timing */}
       {view === 'ratio' && (
         <ResponsiveContainer width="100%" height={190}>
           <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
