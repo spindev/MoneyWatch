@@ -187,12 +187,11 @@ export const OverviewTable: React.FC<OverviewTableProps> = ({ netIncome, expense
         </div>
       </div>
 
-      {/* Budget charts (expense breakdown + income/expenses ratio) */}
+      {/* Budget charts (total expenses + income/expenses ratio) */}
       <BudgetCharts
         netIncome={netIncome}
         expenses={expenses}
-        multiplier={multiplier}
-        periodLabel={PERIOD_LABELS[period]}
+        period={period}
       />
     </div>
     </>
