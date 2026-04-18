@@ -10,15 +10,12 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Optional release tag to expose in the app footer
-ARG APP_TAG
-
 # Fetch finance data at build time (baked into the static assets)
 RUN node scripts/fetch-finance-data.mjs
 
 # Build with base "/" so the app is served from the root path in Docker
 # VITE_IS_DOCKER enables the backup/restore section (only available with the Express server)
-RUN env VITE_IS_DOCKER=true VITE_APP_TAG="${APP_TAG}" sh -c 'npx tsc -b && npx vite build --base /'
+RUN env VITE_IS_DOCKER=true sh -c 'npx tsc -b && npx vite build --base /'
 
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
 FROM node:20-alpine

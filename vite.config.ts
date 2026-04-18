@@ -4,11 +4,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { readFileSync } from 'fs'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
-const rawTag = process.env.VITE_APP_TAG?.trim()
-let appTag = `v${pkg.version}`
-if (rawTag) {
-  appTag = rawTag.startsWith('v') ? rawTag : `v${rawTag}`
-}
 
 export default defineConfig({
   plugins: [
@@ -72,7 +67,6 @@ export default defineConfig({
   base: '/MoneyWatch/',
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
-    __APP_TAG__: JSON.stringify(appTag),
   },
   server: {
     proxy: {
