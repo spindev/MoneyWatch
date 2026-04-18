@@ -16,29 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Normalize version and tag
-        id: version
-        shell: bash
-        run: |
-          VERSION="${{ github.event.inputs.version }}"
-          TAG="$VERSION"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Create release with generated notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ steps.version.outputs.tag }}" \
+          gh release create "${{ github.event.inputs.version }}" \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
-            --title "${{ steps.version.outputs.tag }}" \
+            --title "${{ github.event.inputs.version }}" \
             --generate-notes
 
   docker:
@@ -64,7 +53,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ needs.release.outputs.tag }}
+            type=raw,value=${{ github.event.inputs.version }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
