@@ -5,7 +5,10 @@ import { readFileSync } from 'fs'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
 const rawTag = process.env.VITE_APP_TAG?.trim()
-const appTag = rawTag ? (rawTag.startsWith('v') ? rawTag : `v${rawTag}`) : `v${pkg.version}`
+let appTag = `v${pkg.version}`
+if (rawTag) {
+  appTag = rawTag.startsWith('v') ? rawTag : `v${rawTag}`
+}
 
 export default defineConfig({
   plugins: [
