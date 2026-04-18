@@ -4,7 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { readFileSync } from 'fs'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
-const appTag = process.env.VITE_APP_TAG?.trim() || `v${pkg.version}`
+const rawTag = process.env.VITE_APP_TAG?.trim()
+const appTag = rawTag ? (rawTag.startsWith('v') ? rawTag : `v${rawTag}`) : `v${pkg.version}`
 
 export default defineConfig({
   plugins: [
